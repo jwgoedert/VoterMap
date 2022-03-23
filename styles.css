@@ -1,6 +1,7 @@
 .states {
-    fill: rgba(0,0, 255, .25);
+    fill: rgba(0, 0, 255, .25);
 }
+
 .states :hover {
     fill: lightblue;
 }
@@ -13,7 +14,19 @@
     stroke-linecap: round;
     pointer-events: none;
 }
+
 /* body{
     background: grey;
 } */
+.counties :hover {
+    fill: coral;
+}
 
+.county-borders {
+    fill: none;
+    stroke: #000;
+    stroke-width: 0.5px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: none;
+}

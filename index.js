@@ -7,104 +7,129 @@ let createView = function(view){
   //state map-static
   //state map with counties-static-hover info  
 }
-width = width/2;
-height = height/2;
-//You can reassign a value to width here to resize the map to your specs
 let svg = d3.select('.map-box')
   .append('svg')
   .attr('width', width)
   .attr('height', height)
   .style('background', 'wheat')
 
-  
-//Set a projection using the geoAlbersUsa to include Alaska and Hawaii
-//Scale sets the size, translate positions off the center point of the map
-// let projection = d3.geoEquirectangular()
-let projection = d3.geoAlbersUsa()
+let projection = d3.geoEquirectangular()
+// let projection = d3.geoAlbersUsa() // d3.geoEquirectangular()
   .precision(0)
   .scale(height * 2)
   .translate([width / 2, height / 2]);
 
-//Create a geoPath and specify it's projection
 let path = d3.geoPath()
   .projection(projection)
 
-// const projection = d3.geoEquirectangular()
-// var path = d3.geo.path().projection(projection);
-
-//Load Data
 d3.json('./data/us.json', function (error, data) {
-  // d3.json("https://d3js.org/us-10m.v1.json", function (error, data) {
-
   if (error) throw error;
-  let stateId = 08;
-  let stateId2 = 04;
-  let stateId3 = 21;
+  let stateId = 12;
 
-  console.log('data', data);
-  let clicked = function (err, stateId, statePaths) {
-    if (error) throw err;
+  // let clicked = function (err, stateId, statePaths) {
+    // if (error) throw err;
     
-    statePaths = statePaths.filter(function (d) {
-      return d.__data__.id == stateId;
-    })[0].__data__;
-    console.log(stateId, statePaths);
-    return statePaths;
-    // var b = path.bounds(statePaths),
-    //   s = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
-    //   t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
-    
-    // projection
-    //   .scale(s)
-    //   .translate(t);
-    // return [b,s,t];
-  }
+    // statePaths = statePaths.filter(function (d) {
+    //   return d.__data__.id == stateId;
+    // })[0].__data__;
+    // console.log(stateId, statePaths);
+    // return statePaths;
+  // }
 //filter 
 let states = topojson.feature(data, data.objects.states);
 let counties = topojson.feature(data, data.objects.counties);
-let state = states.features.filter(function (d) { return d.id === stateId || stateId2 || stateId3; })[0];
+let state = states.features.filter(function (d) { return d.id === stateId;})[0];
 projection
 .scale(1)
 .translate([0,0])
   
-  var b = path.bounds(state),
-  // var b = path.bounds(states ),
+let b = path.bounds(state),
   s = 1.0 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
   t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
-  width = (b[1][0]-b[0][0]);
-  console.log("w",width);
-//zoom out to only state selected
-  console.log("the", this.document.location.href.toString().slice(0,2));
-  projection 
-      .scale(s)
-      .translate(t)
-//add all states behind
-  svg.append("g")
-    .attr("class", "states")
-    .selectAll("path")
-    .data(topojson.feature(data, data.objects.states).features)
-    .enter()
-    .append("path")
-    .attr("d", path)
-    .on('click', clicked)
-    
-//  add filled state path
-  svg.append("path")
-    .datum(state)
-    .attr("d", path)
+
+projection 
+  .scale(s)
+  .translate(t)
+//states
+svg.append("g")
+  .attr("class", "states")
+  .selectAll("path")
+  .data(states.features)
+  .enter()
+  .append("path")
+  .attr("d", path)
+  // .on('click', clicked)
   
-// add state borders without using multiple times
-    svg.append("path")
+//state borders
+svg.append("path")
     .attr("class", "state-borders")
     .attr("d", path(topojson.mesh(data, data.objects.states, function (a, b) {
       return a != b;
     })));
-// counties-not working currently
-  // svg.append("path")
-  //   .attr("class", "county-borders")
-  //   .attr("d", path.topojson.feature(data, data.objects.counties).features)
-  //   .attr("d", path(topojson.mesh(data, data.objects.counties, function (a, b) {
-  //     return a != b;
-  //   })));
+//county    
+svg.append("g")
+    .attr("class", "counties")
+    .selectAll("path")
+    .data(counties.features)
+    .enter()
+    .append("path")
+    .attr("d", path)
+//county borders
+svg.append("g")
+  .attr("class", "county-borders")
+  .selectAll("path")
+  .data(counties.features)
+  .enter()
+  .append("path")
+  .attr("d", path)
+  // .on('click', clicked)
+  
+  
+var optionsData = [{
+      value: '0',
+    text: '1970'
+}, {
+      value: '1',
+    text: '1971'
+}];
+let stateList = d3.json("./Data/stateCodes.json", function(error, d){
+  if(error) throw error;
+  console.log(d);
+  optionsData = d.states;
+  // return optionsData;
+  var selectTag = d3.select("select");
+  
+  //we have select all options tags from inside select tag (which there are 0 atm)
+  //and assigned data as to be the base of modelling that selection.
+  var options = selectTag.selectAll('option')
+  // .data(optionsData);
+  .data(optionsData);
+  
+  //d3 sees we have less elements (0) than the data (2), so we are tasked to create
+  //these missing inside the `options.enter` pseudo selection.
+  //if we had some elements from before, they would be reused, and we could access their
+  //selection with just `options`
+  options.enter()
+  .append('option')
+  .attr('value', function(d) {
+    console.log(d.code);
+  return d.code;
+  })
+  .text(function(d) {
+  return d.state;
+  })
+})
+
+    // county
+    // svg.append("path")
+    // .attr("class", "county-borders")
+    // .data(counties.features)
+    // // .attr("d", path.topojson.feature(data, data.objects.counties).features)
+    // .attr("d", path(topojson.mesh(data, data.objects.counties, function (a, b) {
+    //   return a != b;
+    // })));
+    // svg.append("path")
+    //   .datum(state)
+    //   .attr("d", path)
 
 })
