@@ -1,20 +1,21 @@
 let width = parseInt(d3.select(".map-box").style("width"));
-// let height = width / 2;
-// let height = width;
-// width = 300;
-// height = 300;
 let height = width/2;
 
-// width = width/2;
-// height = height/2;
+let createView = function(view){
+  //us map-static-clickable-hover info
+  //us map with counties-static-clickable-hover info
+  //state map-static
+  //state map with counties-static-hover info  
+}
+width = width/2;
+height = height/2;
 //You can reassign a value to width here to resize the map to your specs
 let svg = d3.select('.map-box')
   .append('svg')
   .attr('width', width)
   .attr('height', height)
   .style('background', 'wheat')
-  // .append('rect')
-  // .style('background', 'gray')
+
   
 //Set a projection using the geoAlbersUsa to include Alaska and Hawaii
 //Scale sets the size, translate positions off the center point of the map
