@@ -23,7 +23,11 @@ d3.json('./data/us.json', function (error, data) {
   if (error) throw error;
 
   console.log('data', data);
-
+  
+  let clicked = function (err, d) {
+  if (error) throw err;
+  console.log(d);
+}
 
   svg.append("g")
     .attr("class", "states")
@@ -32,12 +36,12 @@ d3.json('./data/us.json', function (error, data) {
     .enter()
     .append("path")
     .attr("d", path)
-    
+    .on('click', clicked)
 
   svg.append("path")
     .attr("class", "state-borders")
     .attr("d", path(topojson.mesh(data, data.objects.states, function (a, b) {
       return a != b;
     })));
-
+  
   })
