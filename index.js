@@ -5,17 +5,17 @@ let svg = d3.select('.map-box')
   .append('svg')
   .attr('width', width)
   .attr('height', height)
+let projection = d3.geoAlbersUsa()
+  .precision(0)
+  .scale(height * 2)
+  .translate([width / 2, height / 2]);
 
-// svg.append('rect')
-//     .attr('width', 960)
-//     .attr('height', 75)
-//     .style('fill', 'pink')
+let path = d3.geoPath()
+  .projection(projection)
+  
 
-let path = d3.geoPath();
-// let path = d3.geo.path();
-
-// d3.json('./data/us.json', function (error, data) {
-d3.json("https://d3js.org/us-10m.v1.json", function (error, data) {
+d3.json('./data/us.json', function (error, data) {
+// d3.json("https://d3js.org/us-10m.v1.json", function (error, data) {
 
   if (error) throw error;
 
