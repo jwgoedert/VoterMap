@@ -36,6 +36,7 @@ d3.json('./data/us.json', function (error, data) {
     // return statePaths;
   // }
 //filter 
+
 let states = topojson.feature(data, data.objects.states);
 let counties = topojson.feature(data, data.objects.counties);
 let state = states.features.filter(function (d) { return d.id === stateId;})[0];
@@ -85,51 +86,23 @@ svg.append("g")
   // .on('click', clicked)
   
   
-  let stateList = d3.json("./Data/stateCodes.json", function(error, d){
+ d3.json("./Data/stateCodes.json", function(error, d){
       let options = d.states;
   options.forEach(function(d, i){
     d3.select("#selectOptions")
     .append("option")
     .attr("value", d.code)
     .text(d.state)
-    // var e = document.getElementById("selectOptions");
-    // var strUser = e.options[e.selectedIndex].value;
-    // console.log(e.options);
+    .on("change", change)
   })
   d3.select("#selectOptions")
     .on("change", change)
   function change() {
-
     let res = this.options[this.selectedIndex].value;
     let node = d3.select("#selectOptions").node();
     console.log(res, node);
   }
 
-  // if(error) throw error;
-  // console.log(d);
-  // optionsData = d.states;
-  // // return optionsData;
-  // var selectTag = d3.select("select");
-  
-  // //we have select all options tags from inside select tag (which there are 0 atm)
-  // //and assigned data as to be the base of modelling that selection.
-  // var options = selectTag.selectAll('option')
-  // // .data(optionsData);
-  // .data(optionsData);
-  
-  // //d3 sees we have less elements (0) than the data (2), so we are tasked to create
-  // //these missing inside the `options.enter` pseudo selection.
-  // //if we had some elements from before, they would be reused, and we could access their
-  // //selection with just `options`
-  // options.enter()
-  // .append('option')
-  // .attr('value', function(d) {
-  //   console.log(d.code);
-  // return d.code;
-  // })
-  // .text(function(d) {
-  // return d.state;
-  // })
 })
 
     // county
