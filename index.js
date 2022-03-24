@@ -12,6 +12,25 @@ let svg = d3.select('.map-box')
   .attr('width', width)
   .attr('height', height)
   .style('background', 'wheat')
+  //dropdown menu
+d3.json("./Data/stateCodes.json", function (error, d) {
+  let options = d.states;
+  options.forEach(function (d, i) {
+    d3.select("#selectOptions")
+      .append("option")
+      .attr("value", d.code)
+      .text(d.state)
+      .on("change", change)
+  })
+  d3.select("#selectOptions")
+    .on("change", change)
+  function change() {
+    let res = this.options[this.selectedIndex].value;
+    let node = d3.select("#selectOptions").node();
+    console.log(res, node);
+  }
+
+});
 
 let projection = d3.geoEquirectangular()
 // let projection = d3.geoAlbersUsa() // d3.geoEquirectangular()
@@ -86,24 +105,24 @@ svg.append("g")
   // .on('click', clicked)
   
   
- d3.json("./Data/stateCodes.json", function(error, d){
-      let options = d.states;
-  options.forEach(function(d, i){
-    d3.select("#selectOptions")
-    .append("option")
-    .attr("value", d.code)
-    .text(d.state)
-    .on("change", change)
-  })
-  d3.select("#selectOptions")
-    .on("change", change)
-  function change() {
-    let res = this.options[this.selectedIndex].value;
-    let node = d3.select("#selectOptions").node();
-    console.log(res, node);
-  }
+//  d3.json("./Data/stateCodes.json", function(error, d){
+//       let options = d.states;
+//   options.forEach(function(d, i){
+//     d3.select("#selectOptions")
+//     .append("option")
+//     .attr("value", d.code)
+//     .text(d.state)
+//     .on("change", change)
+//   })
+//   d3.select("#selectOptions")
+//     .on("change", change)
+//   function change() {
+//     let res = this.options[this.selectedIndex].value;
+//     let node = d3.select("#selectOptions").node();
+//     console.log(res, node);
+//   }
 
-})
+// })
 
     // county
     // svg.append("path")
