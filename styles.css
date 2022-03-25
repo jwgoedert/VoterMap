@@ -1,14 +1,61 @@
 .states {
-    fill: rgba(0, 0, 255, .25);
+    fill: orange;
 }
 
 .states :hover {
     fill: lightblue;
 }
 
+.states-borders {
+    fill: none;
+    stroke: darkblue;
+    stroke-width: .5px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: none;
+}
+
+.states-counties {
+    fill: lightsalmon;
+}
+
+.states-counties :hover {
+    fill:lightblue;
+}
+
+.states-counties-borders {
+    fill: none;
+    stroke:darkmagenta;
+    stroke-width: .5px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: none;
+}
+
+.state {
+    fill: orangered;
+}
+
 .state-borders {
     fill: none;
-    stroke: #fff;
+    stroke: orange;
+    stroke-width: 2px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: none;
+}
+
+.state-counties {
+    fill: aliceblue;
+}
+
+.state-counties :hover {
+    fill: lightblue;
+}
+
+.state-counties-borders {
+    fill: none;
+    stroke: magenta;
     stroke-width: 0.5px;
     stroke-linejoin: round;
     stroke-linecap: round;
@@ -24,7 +71,7 @@
 
 .county-borders {
     fill: none;
-    stroke: #000;
+    stroke: aquamarine;
     stroke-width: 0.5px;
     stroke-linejoin: round;
     stroke-linecap: round;
