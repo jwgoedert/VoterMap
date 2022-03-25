@@ -1,35 +1,31 @@
 let width = parseInt(d3.select(".map-box").style("width"));
 let height = width/2;
-let stateId = 01;
+let stateId = 31;
 let see = console.log;
+let usData,countyData,dropDown;
+let query = window.location.search.substring(1);
 let svg = d3.select('.map-box')
   .append('svg')
   .attr('width', width)
   .attr('height', height)
   .style('background', 'wheat')
 
-d3.json("./Data/stateCodes.json", function (error, d) {
-  let options = d.states;
-  options.forEach(function (d, i) {
-    d3.select("#selectOptions")
-      .append("option")
-      .attr("value", d.code)
-      .text(d.state)
-      .on("change", change)
-  })
-  d3.select("#selectOptions")
-    .on("change", change)
-  function change() {
-    let res = this.options[this.selectedIndex].value;
-    let node = d3.select("#selectOptions").node();
-    stateId =  res;
-    console.log(res, node);
-  }
+queue()
+  .defer(d3.json, "./Data/us.json")
+  .defer(d3.csv, "./Data/data.csv")
+  .defer(d3.json, "./Data/stateCodes.json")
+  .await(loadData)
 
-});
+function loadData(error, us, data, dd){
+  if(error) throw error;
+  usData = us;
+  countyData = data;
+  dropDown = dd;
+  see(usData, countyData, dropDown);
+// } 
+see(data);
 
-let query = window.location.search.substring(1);
-console.log(query);
+
 // let projection = d3.geoEquirectangular()
 let projection = d3.geoAlbersUsa() // d3.geoEquirectangular()
   .precision(0)
@@ -39,28 +35,16 @@ let projection = d3.geoAlbersUsa() // d3.geoEquirectangular()
 let path = d3.geoPath()
   .projection(projection)
 
-d3.json('./data/us.json', function (error, data) {
-  if (error) throw error;
-  let stateId = 31;
-
-  // let clicked = function (err, stateId, statePaths) {
-    // if (error) throw err;
-    
-    // statePaths = statePaths.filter(function (d) {
-    //   return d.__data__.id == stateId;
-    // })[0].__data__;
-    // console.log(stateId, statePaths);
-    // return statePaths;
-  // }
+// d3.json('./data/us.json', function (error, data) {
+//   if (error) throw error;  
 //filter 
-stateId = parseInt(query);
-
-let states = topojson.feature(data, data.objects.states);
-let counties = topojson.feature(data, data.objects.counties);
+// see('...', data)
+stateId = parseInt(query) || stateId;
+console.log(data);
+let states = topojson.feature(usData, usData.objects.states);
+let counties = topojson.feature(usData, usData.objects.counties);
 let state = states.features.filter(function (d) { return d.id === stateId; })[0];
-// let stateCounties = counties.features.filter(function (d) { return d.id.toString().slice(0, 2) === stateId.toString(); });
 let stateCounties = counties.features.filter(function (d) { return d.id.toString().slice(0, 2) === stateId.toString(); });
-console.log(stateCounties);
 projection
 .scale(1)
 .translate([0,0])
@@ -73,7 +57,24 @@ projection
 projection 
   .scale(s)
   .translate(t)
-
+function hover(d){
+  console.log('hover', d);
+  // let rate = countyData.filter( function(c){
+  //   see(c, d);
+  //   return c.id == d.id }).rate;
+  svg.append("rect")
+    .attr("class", "label")
+    .style("fill", "white")
+    .attr("x", width * .75)
+    .attr("y", height * .7)
+    .attr("width", 120)
+    .attr("height", 36)
+    // .fill('white')
+  svg.append("text")
+    .attr("x", width * .75)
+    .attr("y", height * .75)
+    .text( d.id)
+}
   //states
   function renderStates() {
     svg.append("g")
@@ -83,7 +84,7 @@ projection
       .enter()
       .append("path")
       .attr("d", path)
-    see("state", states.features)
+    // see("state", states.features)
   }
   //states borders
   function renderStatesBorders() {
@@ -92,7 +93,7 @@ projection
       .attr("d", path(topojson.mesh(data, data.objects.states, function (a, b) {
         return a != b;
       })));
-    see('states borders', data.objects.states);
+    // see('states borders', data.objects.states);
   }
   //states counties
   function renderStatesCounties(){
@@ -103,7 +104,7 @@ projection
       .enter()
       .append("path")
       .attr("d", path)
-      see("all counties", counties.features);
+      // see("all counties", counties.features);
   }    
   //county borders
   function renderStatesCountiesBorders(){  
@@ -114,7 +115,7 @@ projection
       .enter()
       .append("path")
       .attr("d", path)
-      see("counties borders", counties.features);
+      // see("counties borders", counties.features);
   }  
 
   function renderState() {
@@ -122,7 +123,7 @@ projection
       .attr("class", "state")
       .datum(state)
       .attr("d", path)
-      see('state', state);
+      // see('state', state);
   }
 
   function renderStateBorders() {
@@ -130,7 +131,7 @@ projection
       .attr("class", "state-borders")
       .datum(state)
       .attr("d", path)
-      see("state borders", state);
+      // see("state borders", state);
   }
 
   function renderStateCounties(){
@@ -141,7 +142,8 @@ projection
       .enter()
       .append("path")
       .attr("d", path)
-      see("state counties", stateCounties);
+      .on("mouseover", hover)
+      // see("state counties", stateCounties);
   }
   
 
@@ -153,27 +155,19 @@ projection
       .enter()
       .append("path")
       .attr("d", path)
-      see("state counties borders", stateCounties)
+      // see("state counties borders", stateCounties)
     }
-    renderStates();
-    renderStatesBorders();
+    // renderStates();
+    // renderStatesBorders();
     
-    renderStatesCounties();
-    renderStatesCountiesBorders();
+    // renderStatesCounties();
+    // renderStatesCountiesBorders();
     
     renderState();
     renderStateBorders();
 
     renderStateCounties();
     renderStateCountiesBorders();
-
-  // county
-  // svg.append("path")
-  //   .attr("class", "county-borders")
-  //   .data(counties.features)
-  //   // .attr("d", path.topojson.feature(data, data.objects.counties).features)
-  //   .attr("d", path(topojson.mesh(data, data.objects.counties, function (a, b) {
-  //     return a != b;
-  //   })));
-
-})
+  
+// })
+}
