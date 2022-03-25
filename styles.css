@@ -46,7 +46,7 @@
 }
 
 .state-counties {
-    fill: aliceblue;
+    fill: rgb(44, 167, 181);
 }
 
 .state-counties :hover {
@@ -55,7 +55,7 @@
 
 .state-counties-borders {
     fill: none;
-    stroke: magenta;
+    stroke: black;
     stroke-width: 0.5px;
     stroke-linejoin: round;
     stroke-linecap: round;

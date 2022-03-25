@@ -21,13 +21,10 @@ function loadData(error, us, data, dd){
   usData = us;
   countyData = data;
   dropDown = dd;
-  see(usData, countyData, dropDown);
-// } 
-see(data);
 
 
-// let projection = d3.geoEquirectangular()
-let projection = d3.geoAlbersUsa() // d3.geoEquirectangular()
+let projection = d3.geoEquirectangular()
+// let projection = d3.geoAlbersUsa() // d3.geoEquirectangular()
   .precision(0)
   .scale(height * 2)
   .translate([width / 2, height / 2]);
@@ -35,12 +32,8 @@ let projection = d3.geoAlbersUsa() // d3.geoEquirectangular()
 let path = d3.geoPath()
   .projection(projection)
 
-// d3.json('./data/us.json', function (error, data) {
-//   if (error) throw error;  
-//filter 
-// see('...', data)
-stateId = parseInt(query) || stateId;
-console.log(data);
+  stateId = parseInt(query) || stateId;
+
 let states = topojson.feature(usData, usData.objects.states);
 let counties = topojson.feature(usData, usData.objects.counties);
 let state = states.features.filter(function (d) { return d.id === stateId; })[0];
@@ -58,10 +51,8 @@ projection
   .scale(s)
   .translate(t)
 function hover(d){
-  console.log('hover', d);
-  // let rate = countyData.filter( function(c){
-  //   see(c, d);
-  //   return c.id == d.id }).rate;
+  let rate = countyData.filter( function(c){
+    return c.id == d.id })[0].rate;
   svg.append("rect")
     .attr("class", "label")
     .style("fill", "white")
@@ -73,7 +64,7 @@ function hover(d){
   svg.append("text")
     .attr("x", width * .75)
     .attr("y", height * .75)
-    .text( d.id)
+    .text(rate)
 }
   //states
   function renderStates() {
@@ -163,11 +154,10 @@ function hover(d){
     // renderStatesCounties();
     // renderStatesCountiesBorders();
     
-    renderState();
-    renderStateBorders();
+    // renderState();
+    // renderStateBorders();
 
     renderStateCounties();
     renderStateCountiesBorders();
   
-// })
 }
