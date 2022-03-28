@@ -1,5 +1,6 @@
 let width = parseInt(d3.select(".map-box").style("width"));
 let height = width/2;
+width = width * .6;
 let stateId = 31;
 let see = console.log;
 let usData,countyData,dropDown;
@@ -9,6 +10,11 @@ let svg = d3.select('.map-box')
   .attr('width', width)
   .attr('height', height)
   .style('background', 'wheat')
+let dash = d3.select('.dashboard')
+  .append('svg')
+  .attr('width', width)
+  .attr('height', '4rem')
+  .style('background-color','lightblue')
 
 queue()
   .defer(d3.json, "./Data/us.json")
@@ -51,20 +57,20 @@ projection
   .scale(s)
   .translate(t)
 function hover(d){
-  let rate = countyData.filter( function(c){
-    return c.id == d.id })[0].rate;
-  svg.append("rect")
+  let county = countyData.filter( function(c){
+    return c.id == d.id })[0];
+  dash.append("rect")
     .attr("class", "label")
     .style("fill", "white")
-    .attr("x", width * .75)
-    .attr("y", height * .7)
-    .attr("width", 120)
-    .attr("height", 36)
-    // .fill('white')
-  svg.append("text")
-    .attr("x", width * .75)
-    .attr("y", height * .75)
-    .text(rate)
+    .attr("x", 0)
+    // .attr("y", height*.1 )
+    .attr("width", width )
+    .attr("height", '4rem')
+  dash.append("text")
+    .attr("x", width * .1)
+    .attr("y", height * .1)
+    .attr("font-size", "2rem")
+    .text(county.name + " " + county.rate)
 }
   //states
   function renderStates() {
