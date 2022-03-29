@@ -8,10 +8,11 @@
 }
 
 .dashboard {
+    margin-left: 2rem;
     width: 45%;
     display: inline-block;
     position:absolute;
-    font-size: 3rem;
+    font-size: 2rem;
     font-family: 'Courier New';
 }
 
@@ -85,6 +86,13 @@
 /* body{
     background: grey;
 } */
+.dashboard{
+
+}
+.state-header {
+    display:inline-block;
+    position: relative;
+}
 .selected {
     fill: orange;
     color: orange;
