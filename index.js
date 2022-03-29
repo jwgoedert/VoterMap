@@ -1,8 +1,9 @@
 let width = parseInt(d3.select(".map-box").style("width"));
 let height = width/2;
-width = width * .6;
+// width = width * .6;
 let stateId = 31;
 let see = console.log;
+let selectedCounty;
 let usData,countyData,dropDown;
 let query = window.location.search.substring(1);
 let svg = d3.select('.map-box')
@@ -10,11 +11,15 @@ let svg = d3.select('.map-box')
   .attr('width', width)
   .attr('height', height)
   .style('background', 'wheat')
-let dash = d3.select('.dashboard')
-  .append('svg')
-  .attr('width', width)
-  .attr('height', '4rem')
-  .style('background-color','lightblue')
+let dashSelected = d3.select('.dashboard')
+  .append('div')
+  .attr('class', 'selected')
+  .text('Selected: ')
+
+  // .append('svg')
+  // .attr('width', width)
+  // .attr('height', '4rem')
+  // .style('background-color','lightblue')
 
 queue()
   .defer(d3.json, "./Data/us.json")
@@ -27,7 +32,7 @@ function loadData(error, us, data, dd){
   usData = us;
   countyData = data;
   dropDown = dd;
-
+  // see(us, data, dd);
 
 // let projection = d3.geoEquirectangular()
 let projection = d3.geoAlbersUsa() // d3.geoEquirectangular()
@@ -56,20 +61,57 @@ projection
 projection 
   .scale(s)
   .translate(t)
-function hover(d){
-  // see('params', params);
-  see('hover', d);
-  let county = countyData.filter( function(c){
-    return c.id == d.id })[0];
-  d3.select('.dashboard')
-    .text(`${county.name} ${county.rate}`)
+
+function countyById(counties, ids){
+  
+  let countyName = counties.filter(function (c) {
+    return c.id == ids.id;
+  })[0];
+  see("cName", countyName);
+  return countyName;
 }
+function hover(d){
+  see('hover', d);  
+  see(selectedCounty);
+    let county = countyById(countyData, d);
+    d3.select('.dashboard')
+      .append("div")
+      .attr('class', 'county-hover')
+    // .text(`${selectedCounty.name} ${selectedCounty.rate}`)
+    d3.select(".county-hover")    
+      .text(`${county.name} ${county.rate}`)
+  }
+  
 function click(d){
   see("clicked", d);
+  selectedCounty = countyById(countyData, d);
+  
   d3.selectAll("path")
-    .style("fill", null);
+  .style("fill", null);
   d3.select(this)
-    .style("fill", "orange");
+  .style("fill", "orange");
+  // d3.selec(".dashboard")
+
+  dashSelected
+  // dash.append("div")
+    // .attr("class", "selected")
+    // d3.select(".container")
+    d3.select(".dashboard")
+      .append("div")
+      .attr("class", "selected")
+    d3.select(".selected")
+      .text(`${selectedCounty.name} ${selectedCounty.rate}`)
+    // d3.select(".dashboard")
+  // dash.append("div")
+  //   .attr("class", "selected")
+  //   .text(`${selectedCounty.name} ${selectedCounty.rate}`)
+
+}
+function mouseOut(d){
+  see('mousedOUt!');
+  selectedCounty = selectedCounty || {name:'', rate:''};
+  d3.select("dashboard")
+    // .text(`${selectedCounty.name} ${selectedCounty.rate}`)
 }
   //states
   function renderStates() {
@@ -131,19 +173,16 @@ function click(d){
   }
 
   function renderStateCounties(){
-    console.log('path', path);
-    see(stateCounties)
     svg.append("g")
       .attr("class", "state-counties")
       .selectAll("path")
       .data(stateCounties)
       .enter()
       .append("path")
-      // .attr("id",)
       .attr("d", path)
       .on("mouseover", hover)
       .on("click", click)
-      // .on("click", function(d){return d3.select(this).style("fill","orange")})
+      // .on("mouseout", mouseOut)
       // see("state counties", stateCounties);
   }
   
