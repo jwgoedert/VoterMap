@@ -29,8 +29,8 @@ function loadData(error, us, data, dd){
   dropDown = dd;
 
 
-let projection = d3.geoEquirectangular()
-// let projection = d3.geoAlbersUsa() // d3.geoEquirectangular()
+// let projection = d3.geoEquirectangular()
+let projection = d3.geoAlbersUsa() // d3.geoEquirectangular()
   .precision(0)
   .scale(height * 2)
   .translate([width / 2, height / 2]);
@@ -57,20 +57,16 @@ projection
   .scale(s)
   .translate(t)
 function hover(d){
+  // see('params', params);
+  see('hover', d);
   let county = countyData.filter( function(c){
     return c.id == d.id })[0];
-  dash.append("rect")
-    .attr("class", "label")
-    .style("fill", "white")
-    .attr("x", 0)
-    // .attr("y", height*.1 )
-    .attr("width", width )
-    .attr("height", '4rem')
-  dash.append("text")
-    .attr("x", width * .1)
-    .attr("y", height * .1)
-    .attr("font-size", "2rem")
-    .text(county.name + " " + county.rate)
+  d3.select('.dashboard')
+    .text(`${county.name} ${county.rate}`)
+}
+function click(d){
+  see("clicked", d);
+  
 }
   //states
   function renderStates() {
@@ -140,6 +136,7 @@ function hover(d){
       .append("path")
       .attr("d", path)
       .on("mouseover", hover)
+      .on("click", click)
       // see("state counties", stateCounties);
   }
   
