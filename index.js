@@ -66,7 +66,10 @@ function hover(d){
 }
 function click(d){
   see("clicked", d);
-  
+  d3.selectAll("path")
+    .style("fill", null);
+  d3.select(this)
+    .style("fill", "orange");
 }
   //states
   function renderStates() {
@@ -128,15 +131,19 @@ function click(d){
   }
 
   function renderStateCounties(){
+    console.log('path', path);
+    see(stateCounties)
     svg.append("g")
       .attr("class", "state-counties")
       .selectAll("path")
       .data(stateCounties)
       .enter()
       .append("path")
+      // .attr("id",)
       .attr("d", path)
       .on("mouseover", hover)
       .on("click", click)
+      // .on("click", function(d){return d3.select(this).style("fill","orange")})
       // see("state counties", stateCounties);
   }
   
