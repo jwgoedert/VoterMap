@@ -24,6 +24,10 @@ let dashHovered = d3.select('.dashboard')
   .append("div")
   .attr("class", "dash-hover")
   
+color_domain = [500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000];
+var color = d3.scaleThreshold()
+  .domain(color_domain)
+  .range(["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]);
 
 queue()
   .defer(d3.json, "./Data/us.json")
@@ -102,6 +106,13 @@ function click(d){
   dashSelected
       .text(`Selected: ${selectedCounty.name} ${selectedCounty.rate}`);
 }
+  function colorWithRateById(d) {
+    see('color', countyData, d)
+    d3.select(this)
+      .style("fill", color(500));
+
+    return color(countyById(countyData, d)).rate;
+  }
 
   //states
   function renderStates() {
@@ -170,6 +181,7 @@ function click(d){
       .enter()
       .append("path")
       .attr("d", path)
+      .style("fill", colorWithRateById)
       .on("mouseover", hover)
       .on("click", click)
       // .on("mouseout", mouseOut)
@@ -185,6 +197,10 @@ function click(d){
       .enter()
       .append("path")
       .attr("d", path)
+      .style("fill", function(d){
+        return color(countyById(countyData, d).rate)
+      })
+
       // see("state counties borders", stateCounties)
     }
     // renderStates();
