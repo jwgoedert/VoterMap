@@ -42,7 +42,8 @@ function loadData(error, us, data, dd){
   dropDown = dd;
 
 // let projection = d3.geoEquirectangular()
-let projection = d3.geoAlbersUsa() // d3.geoEquirectangular()
+let projection = d3.geoMercator()
+// let projection = d3.geoAlbersUsa() // d3.geoEquirectangular()
   .precision(0)
   .scale(height * 2)
   .translate([width / 2, height / 2]);
@@ -80,7 +81,7 @@ function stateById(states, id){
   return stateName;
 }
 
-stateById(dd, stateId);
+// stateById(dd, stateId);
 
 function countyById(counties, ids){
   let countyName = counties.filter(function (c) {
@@ -125,6 +126,7 @@ function click(d){
       .attr("d", path)
     // see("state", states.features)
   }
+  // renderStates();
   //states borders
   function renderStatesBorders() {
     svg.append("path")
@@ -134,6 +136,7 @@ function click(d){
       })));
     // see('states borders', data.objects.states);
   }
+  // renderStatesBorders();
   //states counties
   function renderStatesCounties(){
     svg.append("g")
