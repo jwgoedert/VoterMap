@@ -76,8 +76,7 @@
 
 .state-counties-borders {
     fill: none;
-    stroke: lightcoral;
-    /* stroke: black; */
+    stroke: rgba(13, 106, 106, 0.501);
     stroke-width: 0.5px;
     stroke-linejoin: round;
     stroke-linecap: round;
