@@ -1,10 +1,9 @@
 let width = parseInt(d3.select(".map-box").style("width"));
 let height = width/2;
 // width = width * .6;
-let stateName = 'Nebraska';
 let see = console.log;
 let selectedCounty;
-let usData,countyData,dropDown;
+let usData,countyData;
 let queryParams = new URLSearchParams(window.location.search);
 let stateId = queryParams.has('state') ? +queryParams.get('state'): 31;
 
@@ -12,18 +11,6 @@ let svg = d3.select('.map-box')
   .append('svg')
   .attr('width', width)
   .attr('height', height)
-  .style('background', 'wheat')
-let dashState = d3.select(".dashboard")
-  .append("h3")
-  .attr("class","state-header")
-  .text(stateName);
-let dashSelected = d3.select(".dashboard")
-  .append("div")
-  .attr("class", "selected")
-  .text("Selected: ");
-let dashHovered = d3.select('.dashboard')
-  .append("div")
-  .attr("class", "dash-hover")
   
 color_domain = [500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000];
 var color = d3.scaleThreshold()
@@ -36,15 +23,15 @@ queue()
   .defer(d3.json, "./Data/stateCodes.json")
   .await(loadData)
 
-function loadData(error, us, data, dd){
+function loadData(error, us, data, statesList){
   if(error) throw error;
   usData = us;
   countyData = data;
-  dropDown = dd;
 
-// let projection = d3.geoEquirectangular()
+  d3.select(".state-header")
+  .text(statesList.states.find(el => el.code == stateId).state)
+
 let projection = d3.geoMercator()
-// let projection = d3.geoAlbersUsa() // d3.geoEquirectangular()
   .precision(0)
   .scale(height * 2)
   .translate([width / 2, height / 2]);
@@ -68,39 +55,24 @@ projection
 projection 
   .scale(s)
   .translate(t)
-  
-function stateById(states, id){
-  let stateName = states.states.filter(function(s){
-    return s.code == id;
-  })[0].state; 
-  dashState.text(stateName);
-  return stateName;
-}
 
-stateById(dd, stateId);
-
-function countyById(counties, ids){
-  let countyName = counties.filter(function (c) {
-    return c.id == ids.id;
-  })[0];
-  // see("cName", countyName);
-  return countyName;
+function countyById(counties, county){
+  return counties.find(el => el.id == county.id);
 }
 
 function hover(d){
     let county = countyById(countyData, d);
-  dashHovered
-    // d3.select(".dash-hover")    
+    d3.select(".dash-hover")
       .text(`${county.name} ${county.rate}`)
 }
   
 function click(d){
   selectedCounty = countyById(countyData, d);
-  d3.selectAll("path")
+    d3.selectAll("path")
       .style("fill", null);
-  d3.select(this)
+    d3.select(this)
       .style("fill", "orange");
-  dashSelected
+    d3.select(".selected")
       .text(`Selected: ${selectedCounty.name} ${selectedCounty.rate}`);
 }
   function colorWithRateById(d) {
