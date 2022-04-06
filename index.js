@@ -3,7 +3,7 @@ let height = width/2;
 // width = width * .6;
 let see = console.log;
 let selectedCounty;
-let usData,countyData,dropDown;
+let usData,countyData;
 let queryParams = new URLSearchParams(window.location.search);
 let stateId = queryParams.has('state') ? +queryParams.get('state'): 31;
 
@@ -11,17 +11,6 @@ let svg = d3.select('.map-box')
   .append('svg')
   .attr('width', width)
   .attr('height', height)
-  .style('background', 'wheat')
-let dashState = d3.select(".dashboard")
-  .append("h3")
-  .attr("class","state-header")
-let dashSelected = d3.select(".dashboard")
-  .append("div")
-  .attr("class", "selected")
-  .text("Selected: ");
-let dashHovered = d3.select('.dashboard')
-  .append("div")
-  .attr("class", "dash-hover")
   
 color_domain = [500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000];
 var color = d3.scaleThreshold()
@@ -34,16 +23,15 @@ queue()
   .defer(d3.json, "./Data/stateCodes.json")
   .await(loadData)
 
-function loadData(error, us, data, dd){
+function loadData(error, us, data, statesList){
   if(error) throw error;
   usData = us;
   countyData = data;
-  dropDown = dd;
 
-  dashState.text(dd.states.find(el => el.code == stateId).state)
+  d3.select(".state-header")
+  .text(statesList.states.find(el => el.code == stateId).state)
 
 let projection = d3.geoMercator()
-// let projection = d3.geoAlbersUsa() // d3.geoEquirectangular()
   .precision(0)
   .scale(height * 2)
   .translate([width / 2, height / 2]);
@@ -74,17 +62,17 @@ function countyById(counties, county){
 
 function hover(d){
     let county = countyById(countyData, d);
-  dashHovered
+    d3.select(".dash-hover")
       .text(`${county.name} ${county.rate}`)
 }
   
 function click(d){
   selectedCounty = countyById(countyData, d);
-  d3.selectAll("path")
+    d3.selectAll("path")
       .style("fill", null);
-  d3.select(this)
+    d3.select(this)
       .style("fill", "orange");
-  dashSelected
+    d3.select(".selected")
       .text(`Selected: ${selectedCounty.name} ${selectedCounty.rate}`);
 }
   function colorWithRateById(d) {
