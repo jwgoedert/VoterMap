@@ -68,18 +68,13 @@ projection
   .scale(s)
   .translate(t)
 
-function countyById(counties, ids){
-  let countyName = counties.filter(function (c) {
-    return c.id == ids.id;
-  })[0];
-  // see("cName", countyName);
-  return countyName;
+function countyById(counties, county){
+  return counties.find(el => el.id == county.id);
 }
 
 function hover(d){
     let county = countyById(countyData, d);
   dashHovered
-    // d3.select(".dash-hover")    
       .text(`${county.name} ${county.rate}`)
 }
   
