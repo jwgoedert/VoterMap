@@ -1,7 +1,6 @@
 let width = parseInt(d3.select(".map-box").style("width"));
 let height = width/2;
 // width = width * .6;
-let stateName = 'Nebraska';
 let see = console.log;
 let selectedCounty;
 let usData,countyData,dropDown;
@@ -16,7 +15,6 @@ let svg = d3.select('.map-box')
 let dashState = d3.select(".dashboard")
   .append("h3")
   .attr("class","state-header")
-  .text(stateName);
 let dashSelected = d3.select(".dashboard")
   .append("div")
   .attr("class", "selected")
@@ -42,7 +40,8 @@ function loadData(error, us, data, dd){
   countyData = data;
   dropDown = dd;
 
-// let projection = d3.geoEquirectangular()
+  dashState.text(dd.states.find(el => el.code == stateId).state)
+
 let projection = d3.geoMercator()
 // let projection = d3.geoAlbersUsa() // d3.geoEquirectangular()
   .precision(0)
@@ -68,16 +67,6 @@ projection
 projection 
   .scale(s)
   .translate(t)
-  
-function stateById(states, id){
-  let stateName = states.states.filter(function(s){
-    return s.code == id;
-  })[0].state; 
-  dashState.text(stateName);
-  return stateName;
-}
-
-stateById(dd, stateId);
 
 function countyById(counties, ids){
   let countyName = counties.filter(function (c) {
