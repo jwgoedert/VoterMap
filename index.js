@@ -6,12 +6,12 @@ let selectedCounty;
 let usData,countyData;
 let queryParams = new URLSearchParams(window.location.search);
 let stateId = queryParams.has('state') ? +queryParams.get('state'): 31;
-
+let view = queryParams.has('view') ? queryParams.get('view') : stateId;
 let svg = d3.select('.map-box')
   .append('svg')
   .attr('width', width)
   .attr('height', height)
-  
+see(view);
 color_domain = [500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000];
 var color = d3.scaleThreshold()
   .domain(color_domain)
@@ -31,7 +31,8 @@ function loadData(error, us, data, statesList){
   d3.select(".state-header")
   .text(statesList.states.find(el => el.code == stateId).state)
 
-let projection = d3.geoMercator()
+  let projection = d3.geoAlbers()
+  // let projection = d3.geoMercator()
   .precision(0)
   .scale(height * 2)
   .translate([width / 2, height / 2]);
@@ -47,14 +48,35 @@ projection
 .scale(1)
 .translate([0,0])
   
-  let b = path.bounds(state),
-    // let b = path.bounds(states),
-  s = 1.0 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
-  t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
-
-projection 
+let s, t;
+  // let b = path.bounds(view == 'state' || undefined ? state : states),
+  if(stateId && view == 'state'){
+    let b = path.bounds(state);
+    s = 1.0 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+    t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+    
+  } else if (view == 'country'){
+    let b = path.bounds(states);
+      // s = .9,
+      s = 1.0 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+      // t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+      t = [(width - s * (b[1][0] + b[0][0]))/2, (height - s * (b[1][1] + b[0][1])) / 2];
+      // renderStateCounties();
+      see(b, s, t)
+  } else {
+    console.log('please enter query params for view');
+  }
+   
+  projection 
   .scale(s)
   .translate(t)
+  
+  // let b = path.bounds(states),
+  //   s = 1.0 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+  //   t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];  
+  // projection
+  //   .scale(s)
+  //   .translate(t)
 
 function countyById(counties, county){
   return counties.find(el => el.id == county.id);
@@ -94,7 +116,7 @@ function click(d){
       .attr("d", path)
     // see("state", states.features)
   }
-  // renderStates();
+  renderStates();
   //states borders
   function renderStatesBorders() {
     svg.append("path")
