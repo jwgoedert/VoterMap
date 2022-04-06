@@ -1,12 +1,13 @@
 let width = parseInt(d3.select(".map-box").style("width"));
 let height = width/2;
 // width = width * .6;
-let stateId = 31;
-let stateName = '';
+let stateName = 'Nebraska';
 let see = console.log;
 let selectedCounty;
 let usData,countyData,dropDown;
-let query = window.location.search.substring(1);
+let queryParams = new URLSearchParams(window.location.search);
+let stateId = queryParams.has('state') ? +queryParams.get('state'): 31;
+
 let svg = d3.select('.map-box')
   .append('svg')
   .attr('width', width)
@@ -51,9 +52,6 @@ let projection = d3.geoMercator()
 let path = d3.geoPath()
   .projection(projection)
 
-stateId = parseInt(query) || stateId;
-
-
 let states = topojson.feature(usData, usData.objects.states);
 let counties = topojson.feature(usData, usData.objects.counties);
 let state = states.features.filter(function (d) { return d.id === stateId; })[0];
@@ -72,22 +70,20 @@ projection
   .translate(t)
   
 function stateById(states, id){
-  see(states);
   let stateName = states.states.filter(function(s){
     return s.code == id;
   })[0].state; 
   dashState.text(stateName);
-  see(stateName);
   return stateName;
 }
 
-// stateById(dd, stateId);
+stateById(dd, stateId);
 
 function countyById(counties, ids){
   let countyName = counties.filter(function (c) {
     return c.id == ids.id;
   })[0];
-  see("cName", countyName);
+  // see("cName", countyName);
   return countyName;
 }
 
@@ -108,7 +104,7 @@ function click(d){
       .text(`Selected: ${selectedCounty.name} ${selectedCounty.rate}`);
 }
   function colorWithRateById(d) {
-    see('color', countyData, d)
+    // see('color', countyData, d)
     d3.select(this)
       .style("fill", color(500));
 
