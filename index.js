@@ -8,7 +8,6 @@ let svg = d3.select('.map-box')
   .attr('width', width)
   .attr('height', height)
   
-  
   queue()
   .defer(d3.json, "./Data/us.json")
   .defer(d3.csv, "./Data/data.csv")
@@ -27,7 +26,7 @@ let svg = d3.select('.map-box')
     .translate([width / 2, height / 2]);
     
     let path = d3.geoPath()
-    .projection(projection);
+      .projection(projection);
     
     let states = topojson.feature(usData, usData.objects.states);
     let counties = topojson.feature(usData, usData.objects.counties);
@@ -55,9 +54,26 @@ let svg = d3.select('.map-box')
 
   let countyById = county => countyData.find(el => el.id == county.id);
 
-  let handleEvent = d => d3.select(".dash-hover").text(`${countyById(d).name} ${countyById(d).rate}`);
+  function mouseOver(d){
+    d3.select(this)
+      .transition()
+      .duration(200)
+      .style("stroke", "orange")
+      .style("stroke-width", 3)
+    d3.select(".dash-hover")
+      .text(`${countyById(d).name} ${countyById(d).rate}`);
+
+  }
+
+  function mouseOut(d){
+    d3.select(this)
+      .transition()
+      .duration(200)
+      .style("stroke", "transparent")
+  }
   
   function renderStateCounties(){
+
     svg.append("g")
       .attr("class", "state-counties")
       .selectAll("path")
@@ -65,25 +81,11 @@ let svg = d3.select('.map-box')
       .enter()
       .append("path")
       .attr("d", path)
-      .on("mouseover", handleEvent)
-      .on("click", handleEvent)
+      .style("fill", d => color(countyById(d).rate))
+      .on("mouseover", mouseOver)
+      .on("mouseout", mouseOut)
   }
-    
-  function renderStateCountiesBorders(){
 
-    svg.append("g")
-      .attr("class", "state-counties-borders")
-      .selectAll("path")
-      .data(stateCounties)
-      .enter()
-      .append("path")
-      .attr("d", path)
-      .style("fill", function(d) {
-        let countyFill = color(countyById(d).rate);
-        return countyFill;
-      });
-  }
   renderStateCounties();
-  renderStateCountiesBorders();
     
 }
