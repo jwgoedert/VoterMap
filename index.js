@@ -8,37 +8,43 @@ let svg = d3.select('.map-box')
   .attr('width', width)
   .attr('height', height)
   
-color_domain = [500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000];
-color_domain = d3.range(0,1000, 200);
-let color = d3.scaleThreshold()
-  .domain(color_domain)
-  .range(["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]);
-
-queue()
+  
+  queue()
   .defer(d3.json, "./Data/us.json")
   .defer(d3.csv, "./Data/data.csv")
   .defer(d3.json, "./Data/stateCodes.json")
   .await(loadData)
-
-function loadData(error, usData, countyData, statesList) {
-  if(error) throw error;
   
-  d3.select(".state-header")
+  function loadData(error, usData, countyData, statesList) {
+    if(error) throw error;
+    
+    d3.select(".state-header")
     .text(statesList.states.find(el => el.code == stateId).state)
-
-  let projection = d3.geoMercator()
+    
+    let projection = d3.geoMercator()
     .precision(0)
     .scale(height * 2)
     .translate([width / 2, height / 2]);
-
-  let path = d3.geoPath()
+    
+    let path = d3.geoPath()
     .projection(projection);
+    
+    let states = topojson.feature(usData, usData.objects.states);
+    let counties = topojson.feature(usData, usData.objects.counties);
+    let state = states.features.filter(function (d) { return d.id === stateId; })[0];
+    let stateCounties = counties.features.filter(function (d) { return d.id.toString().slice(0, 2) === stateId.toString(); });
+    let countyRatings = countyData.filter(function (d) { return d.id.toString().slice(0, 2) === stateId.toString(); });
+    let domainMax = d3.max(countyRatings, function(d){return +d.rate});
+    color_domain = d3.range(0, domainMax, domainMax/12);
+    let color = d3.scaleThreshold()
+      .domain(color_domain)
+      // .range(d3.schemeBlues[7])
+      .range(["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]);
+    // console.log(stateCounties);
+  // stateCounties.map(function (e, i){
+  //   e.id
+  // })
 
-  let states = topojson.feature(usData, usData.objects.states);
-  let counties = topojson.feature(usData, usData.objects.counties);
-  let state = states.features.filter(function (d) { return d.id === stateId; })[0];
-  let stateCounties = counties.features.filter(function (d) { return d.id.toString().slice(0, 2) === stateId.toString(); });
-  
   projection
     .scale(1)
     .translate([0,0])
@@ -68,6 +74,7 @@ function loadData(error, usData, countyData, statesList) {
   }
     
   function renderStateCountiesBorders(){
+
     svg.append("g")
       .attr("class", "state-counties-borders")
       .selectAll("path")
@@ -76,7 +83,10 @@ function loadData(error, usData, countyData, statesList) {
       .append("path")
       .attr("d", path)
       // .style("fill", d => color(countyById(d).rate))
-      .style("fill", d => color(countyById(d).rate))
+      .style("fill", function(d) {
+        let countyFill = color(countyById(d).rate);
+        return countyFill;
+      });
   }
   renderStateCounties();
   renderStateCountiesBorders();
