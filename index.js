@@ -2,7 +2,9 @@ let width = parseInt(d3.select(".map-box").style("width"));
 let height = width/2;
 let queryParams = new URLSearchParams(window.location.search);
 let stateId = queryParams.has('state') ? +queryParams.get('state'): 31;
-
+let element = document.getElementById("fips_code");
+let val = element.getAttribute('value');
+stateId = +val || stateId;
 let svg = d3.select('.map-box')
   .append('svg')
   .attr('width', width)
