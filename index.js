@@ -11,9 +11,9 @@ let svg = d3.select('.map-box')
   .attr('height', height)
   
   queue()
-  .defer(d3.json, "./static/data/us.json")
-  .defer(d3.csv, "./static/data/data.csv")
-  .defer(d3.json, "./static/data/stateCodes.json")
+  .defer(d3.json, "/static/data/us.json")
+  .defer(d3.csv, "/static/data/data.csv")
+  .defer(d3.json, "/static/data/stateCodes.json")
   .await(loadData)
   function fipSan(code, el){
     code = code.toString();
@@ -37,9 +37,9 @@ let svg = d3.select('.map-box')
     d3.select(".state-header")
     .text(statesList.states.find(el => el.code == stateId).state)
     
-    // let projection = d3.geoMercator()
+    let projection = d3.geoMercator()
     // let projection = d3.geoEquirectangular()
-    let projection = d3.geoAlbers()
+    // let projection = d3.geoAlbers()
     .precision(0)
     .scale(height * 2)
     .translate([width / 2, height / 2]);
