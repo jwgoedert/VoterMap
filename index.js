@@ -38,12 +38,8 @@ let svg = d3.select('.map-box')
     color_domain = d3.range(0, domainMax, domainMax/12);
     let color = d3.scaleThreshold()
       .domain(color_domain)
-      // .range(d3.schemeBlues[7])
       .range(["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]);
-    // console.log(stateCounties);
-  // stateCounties.map(function (e, i){
-  //   e.id
-  // })
+
 
   projection
     .scale(1)
@@ -82,7 +78,6 @@ let svg = d3.select('.map-box')
       .enter()
       .append("path")
       .attr("d", path)
-      // .style("fill", d => color(countyById(d).rate))
       .style("fill", function(d) {
         let countyFill = color(countyById(d).rate);
         return countyFill;
