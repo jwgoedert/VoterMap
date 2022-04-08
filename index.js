@@ -1,5 +1,5 @@
 let width = parseInt(d3.select(".map-box").style("width"));
-let height = width/2;
+let height = width;
 let queryParams = new URLSearchParams(window.location.search);
 let stateId = queryParams.has('state') ? +queryParams.get('state'): 31;
 let element = document.getElementById("fips_code");
