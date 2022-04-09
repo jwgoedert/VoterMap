@@ -33,7 +33,6 @@ let svg = d3.select('.map-box')
   }
   function loadData(error, usData, countyData, statesList) {
     if(error) throw error;
-    console.log(countyData);
     d3.select(".state-header")
     .text(statesList.states.find(el => el.code == stateId).state)
     
@@ -82,28 +81,31 @@ let svg = d3.select('.map-box')
       .duration(200)
       .style("stroke", "orange")
       .style("stroke-width", 3)
+      this.parentNode.appendChild(this);
     d3.select(".dash-hover")
       .text(`${countyById(d).name} ${countyById(d).rate}`);
-
   }
 
   function mouseOut(d){
     d3.select(this)
       .transition()
       .duration(200)
-      .style("stroke", "transparent")
+      .style("stroke-width", .5)
+      .style("stroke", "rgba(13, 106, 106, 0.5)")
   }
   
   function renderStateCounties(){
 
     svg.append("g")
       .attr("class", "state-counties")
+      .attr("class", "mouse-out")
       .selectAll("path")
       .data(stateCounties)
       .enter()
       .append("path")
       .attr("d", path)
       .style("fill", d => color(countyById(d).rate))
+      // .style("stroke", "rgba(0,0,0,.25)")
       .on("mouseover", mouseOver)
       .on("mouseout", mouseOut)
   }
