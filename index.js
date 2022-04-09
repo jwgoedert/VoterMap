@@ -52,8 +52,6 @@ let svg = d3.select('.map-box')
     let state = states.features.filter(function (d) { return d.id === stateId; })[0];
     let stateCounties = counties.features.filter(function (d) { return fipSan(d.id, d) == fipSan(stateId.toString()); });
     let countyRatings = countyData.filter(function (d) { return fipSan(d.id, d) == fipSan(stateId.toString()); });
-    console.log(state, stateCounties, countyRatings, counties);
-    // let countyRatings = countyData.filter(function (d) { return d.id.toString().slice(0, 2) === stateId.toString(); });
     let domainMax = d3.max(countyRatings, function(d){return +d.rate});
     color_domain = d3.range(0, domainMax, domainMax/12);
     let color = d3.scaleThreshold()
@@ -105,7 +103,6 @@ let svg = d3.select('.map-box')
       .append("path")
       .attr("d", path)
       .style("fill", d => color(countyById(d).rate))
-      // .style("stroke", "rgba(0,0,0,.25)")
       .on("mouseover", mouseOver)
       .on("mouseout", mouseOut)
   }
