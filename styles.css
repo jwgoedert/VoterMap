@@ -17,78 +17,6 @@
     font-family: 'Courier New';
 }
 
-.states {
-    fill: orange;
-}
-
-.states :hover {
-    fill: lightblue;
-}
-
-.states-borders {
-    fill: none;
-    stroke: darkblue;
-    stroke-width: .5px;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-    pointer-events: none;
-}
-
-.states-counties {
-    fill: lightsalmon;
-}
-
-.states-counties :hover {
-    fill: lightblue;
-}
-
-.states-counties-borders {
-    fill: none;
-    stroke: darkmagenta;
-    stroke-width: .5px;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-    pointer-events: none;
-}
-
-.state {
-    fill: orangered;
-}
-
-.state-borders {
-    fill: none;
-    stroke: orange;
-    stroke-width: 2px;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-    pointer-events: none;
-}
-
-.state-counties {
-    /* fill: rgb(44, 167, 181); */
-    fill: black;
-}
-
-.state-counties :hover {
-    fill: turquoise;
-    /* fill: lightblue; */
-}
-
-.state-counties-borders {
-    fill: none;
-    stroke: rgba(13, 106, 106, 0.501);
-    stroke-width: 0.5px;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-    pointer-events: none;
-}
-
-/* body{
-    background: grey;
-} */
-.dashboard{
-
-}
 .state-header {
     display:inline-block;
     position: relative;
@@ -97,19 +25,8 @@
     fill: orange;
     color: orange;
 }
-.counties :hover {
-    fill: coral;
-}
 
-.county-borders {
-    fill: none;
-    stroke: aquamarine;
-    stroke-width: 0.5px;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-    pointer-events: none;
-}
 .mouse-out {
     stroke-width: 0.5px;
-    stroke: rgba(13, 106, 106, 0.501);
+    stroke: rgba(13, 106, 106, 0.5);
 }

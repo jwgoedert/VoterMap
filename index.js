@@ -47,17 +47,16 @@ let svg = d3.select('.map-box')
       .projection(projection);
     
     
-    let states = topojson.feature(usData, usData.objects.states);
-    let counties = topojson.feature(usData, usData.objects.counties);
-    let state = states.features.filter(function (d) { return d.id === stateId; })[0];
-    let stateCounties = counties.features.filter(function (d) { return fipSan(d.id, d) == fipSan(stateId.toString()); });
-    let countyRatings = countyData.filter(function (d) { return fipSan(d.id, d) == fipSan(stateId.toString()); });
-    let domainMax = d3.max(countyRatings, function(d){return +d.rate});
+    let state = topojson.feature(usData, usData.objects.states)
+      .features.filter(d => d.id === stateId)[0];
+    let stateCounties = topojson.feature(usData, usData.objects.counties)
+       .features.filter(d =>  fipSan(d.id, d) == fipSan(stateId.toString()));
+    let countyRatings = countyData.filter(d => fipSan(d.id, d) == fipSan(stateId.toString()));
+    let domainMax = d3.max(countyRatings, d => +d.rate);
     color_domain = d3.range(0, domainMax, domainMax/12);
     let color = d3.scaleThreshold()
       .domain(color_domain)
       .range(["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]);
-
 
   projection
     .scale(1)
@@ -93,9 +92,7 @@ let svg = d3.select('.map-box')
   }
   
   function renderStateCounties(){
-
     svg.append("g")
-      .attr("class", "state-counties")
       .attr("class", "mouse-out")
       .selectAll("path")
       .data(stateCounties)
