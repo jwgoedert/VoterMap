@@ -14,7 +14,6 @@ queue()
   .defer(d3.json, "/static/data/us.json")
   .defer(d3.csv, "/static/data/data.csv")
   .defer(d3.json, "/static/data/stateCodes.json")
-  .defer(d3.json, "https://api.census.gov/data/2019/pep/charagegroups?get=NAME,POP&HISP=0&for=state:*")
   .await(loadData)
 
 function fipSan(code, el) {
