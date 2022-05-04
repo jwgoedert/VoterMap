@@ -32,12 +32,10 @@ function fipSan(code, el) {
   }
   return id;
 }
-function loadData(error, usData, countyData, statesList, censusPop) {
+function loadData(error, usData, countyData, statesList) {
   if (error) throw error;
   d3.select(".state-header")
     .text(statesList.states.find(el => el.code == stateId).state)
-    .append("p")
-    .text(`Estimated 2019 State Population: ${censusPop.find(e => e[3] == stateId)[1]}`)
   let projection = stateId == 2 ?
     d3.geoAlbers() : d3.geoMercator()
       // let projection = d3.geoEquirectangular()
