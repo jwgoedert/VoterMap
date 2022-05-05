@@ -5,39 +5,26 @@ let stateId = queryParams.has('state') ? +queryParams.get('state') : 31;
 let element = document.getElementById("fips_code");
 let val = element.getAttribute('value');
 stateId = +val || stateId;
+let filterStateId = stateId.toString().length == 2? stateId : `0${stateId}`;
 let svg = d3.select('.map-box')
   .append('svg')
   .attr('width', width)
   .attr('height', height)
 
 queue()
-  .defer(d3.json, "/static/data/us.json")
-  .defer(d3.csv, "/static/data/data.csv")
-  .defer(d3.json, "/static/data/stateCodes.json")
+.defer(d3.json, "/static/data/newMerge001.json")
+// .defer(d3.json, "/static/data/us.json")
+// .defer(d3.json, "/static/data/topo-with-names.json")
+.defer(d3.csv, "/static/data/data.csv")
+.defer(d3.json, "/static/data/stateCodes.json")
+  // .defer(d3.json, "/static/data/stateCodesAsKeys.json")
   .await(loadData)
 
-function fipSan(code, el) {
-  code = code.toString();
-  let id, codeLength = code.length;
-  if (codeLength == 5) {
-    id = code.slice(0, 2);
-  } else if (codeLength == 4) {
-    id = `0${code.slice(0, 1)}`;
-  } else if (codeLength == 2) {
-    id = code;
-  } else if (codeLength == 1) {
-    id = `0${code}`
-  } else {
-    return console.error(el, code, "invalid state code, codes must be two digits")
-  }
-  return id;
-}
-function loadData(error, usData, countyData, statesList, censusPop) {
+function loadData(error, usData, countyData, statesList) {
+  console.log(usData)
   if (error) throw error;
   d3.select(".state-header")
     .text(statesList.states.find(el => el.code == stateId).state)
-    .append("p")
-    .text(`Estimated 2019 State Population: ${censusPop.find(e => e[3] == stateId)[1]}`)
   let projection = stateId == 2 ?
     d3.geoAlbers() : d3.geoMercator()
       // let projection = d3.geoEquirectangular()
@@ -48,18 +35,33 @@ function loadData(error, usData, countyData, statesList, censusPop) {
   let path = d3.geoPath()
     .projection(projection);
 
-
+  // let usWStates= topojson.feature(usData.objects.states).features;
+  // console.log(usWStates);
   let state = topojson.feature(usData, usData.objects.states)
     .features.filter(d => d.id === stateId)[0];
   let stateCounties = topojson.feature(usData, usData.objects.counties)
-    .features.filter(d => fipSan(d.id, d) == fipSan(stateId.toString()));
-  let countyRatings = countyData.filter(d => fipSan(d.id, d) == fipSan(stateId.toString()));
+//     .features
+// .filter(function(d, i) { 
+//   //   stateCounties.filter(function(d, i) { 
+//       // console.log(usData.objects.counties.geometries[i].stateCode, d);
+//       // console.log(d.properties.stateCode, stateId)
+//   let newId = stateId.toString().length == 2 ? stateId.toString() : `0${stateId.toString()}`;
+//   return d.properties.stateCode == filterStateId;
+//       //  usData.objects.counties.geometries[i].stateCode == stateId.toString();
+       
+//   });
+  // .filter( (d, i) => usData.objects.counties.geometries[i].stateCode == stateId.toString())
+  // stateCounties.filter( (d, i) => usData.objects.counties.geometries[i].stateCode == stateId.toString())
+
+    .features.filter(d => d.properties.stateCode == filterStateId);
+    // .features.filter(d => d.properties.stateCode == stateId.toString());
+  let countyRatings = countyData.filter(d => d.id == stateId.toString());
   let domainMax = d3.max(countyRatings, d => +d.rate);
   color_domain = d3.range(0, domainMax, domainMax / 12);
   let color = d3.scaleThreshold()
     .domain(color_domain)
     .range(["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]);
-
+console.log('state counties', stateCounties);
   projection
     .scale(1)
     .translate([0, 0])
