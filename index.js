@@ -6,6 +6,7 @@ let element = document.getElementById("fips_code");
 let val = element.getAttribute('value');
 stateId = +val || stateId;
 let filteredStateId = stateId.toString().length == 2? stateId : `0${stateId}`;
+let stateFromCounty = countyId => countyId.length == 5 ? countyId.slice(0, 2) : `0${countyId[0]}`;
 let svg = d3.select('.map-box')
   .append('svg')
   .attr('width', width)
@@ -18,9 +19,12 @@ queue()
     .await(loadData)
 
 function loadData(error, usData, countyData, statesList) {
+  // console.log(usData);
+  let stateName = usData.objects.counties.geometries.find(el => el.properties.stateCode == stateId).properties.stateName;
   if (error) throw error;
   d3.select(".state-header")
-    .text(statesList.states.find(el => el.code == stateId).state)
+    .text(stateName);
+    // .text(statesList.states.find(el => el.code == stateId).state)
   let projection = stateId == 2 ?
     d3.geoAlbers() : d3.geoMercator()
       // let projection = d3.geoEquirectangular()
@@ -35,7 +39,7 @@ function loadData(error, usData, countyData, statesList) {
     .features.filter(d => d.id === stateId)[0];
   let stateCounties = topojson.feature(usData, usData.objects.counties)
     .features.filter(d => d.properties.stateCode == filteredStateId);
-  let countyRatings = countyData.filter(d => d.id == stateId.toString());
+  let countyRatings = countyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
   let domainMax = d3.max(countyRatings, d => +d.rate);
   color_domain = d3.range(0, domainMax, domainMax / 12);
   let color = d3.scaleThreshold()
@@ -86,7 +90,7 @@ function loadData(error, usData, countyData, statesList) {
       .on("mouseover", mouseOver)
       .on("mouseout", mouseOut)
   }
-
+  
   renderStateCounties();
 
 }
