@@ -15,16 +15,13 @@ let svg = d3.select('.map-box')
 queue()
   .defer(d3.json, "/static/data/usRobust.json")
   .defer(d3.csv, "/static/data/data.csv")
-  .defer(d3.json, "/static/data/stateCodes.json")
     .await(loadData)
 
-function loadData(error, usData, countyData, statesList) {
-  // console.log(usData);
+function loadData(error, usData, countyData) {
   let stateName = usData.objects.counties.geometries.find(el => el.properties.stateCode == stateId).properties.stateName;
   if (error) throw error;
   d3.select(".state-header")
     .text(stateName);
-    // .text(statesList.states.find(el => el.code == stateId).state)
   let projection = stateId == 2 ?
     d3.geoAlbers() : d3.geoMercator()
       // let projection = d3.geoEquirectangular()
