@@ -20,7 +20,7 @@ queue()
   .defer(d3.csv, "/static/data/County_Drop_2022.csv")
     .await(loadData)
 
-function loadData(error, usData, countyData) {
+function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDrop) {
   let stateName = usData.objects.counties.geometries.find(el => el.properties.stateCode == stateId).properties.stateName;
   if (error) throw error;
   d3.select(".state-header")
@@ -40,7 +40,14 @@ function loadData(error, usData, countyData) {
   let stateCounties = topojson.feature(usData, usData.objects.counties)
     .features.filter(d => d.properties.stateCode == filteredStateId);
   let countyRatings = countyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
-  let domainMax = d3.max(countyRatings, d => +d.rate);
+  let countyRatingsPrev = countyPrev.filter(d => stateFromCounty(d.id).toString() == filteredStateId.toString());
+  // let countyRatingsPrev = countyPrev.filter(d => stateFromCounty(d.id).toString() == filteredStateId.toString());
+  let countyRatingsCurrent = countyCurrent.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
+  let countyRatingsDrop = countyDrop.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
+  console.log(filteredStateId, countyRatingsCurrent);
+  let domainMax = d3.max(countyRatingsPrev, d => +d.count);
+  // let domainMax = d3.max(countyRatings, d => +d.rate);
+  console.log(domainMax);
   color_domain = d3.range(0, domainMax, domainMax / 12);
   let color = d3.scaleThreshold()
     .domain(color_domain)
@@ -58,8 +65,11 @@ function loadData(error, usData, countyData) {
     .translate(t)
 
   let countyById = county => countyData.find(el => el.id == county.id);
-
+  let countyByIdCurr = county => countyCurrent.find(el => el.id == county.id);
+  let countyByIdPrev = county => countyPrev.find(el => el.id == county.id);
+  let countyByIdDrop = county => countyDrop.find(el => el.id == county.id);
   function mouseOver(d) {
+    console.log(d, countyByIdPrev(d), countyByIdCurr(d), countyByIdDrop(d));
     d3.select(this)
       .transition()
       .duration(200)
@@ -67,7 +77,8 @@ function loadData(error, usData, countyData) {
       .style("stroke-width", 3)
     this.parentNode.appendChild(this);
     d3.select(".dash-hover")
-      .text(`${countyById(d).name} ${countyById(d).rate}`);
+      .text(`${countyByIdPrev(d).County} ${countyByIdDrop(d).count/countyByIdPrev(d).count}`)
+      // .text(`${countyById(d).name} ${countyById(d).rate}`);
   }
 
   function mouseOut(d) {
@@ -86,7 +97,8 @@ function loadData(error, usData, countyData) {
       .enter()
       .append("path")
       .attr("d", path)
-      .style("fill", d => color(countyById(d)) ? color(countyById(d).rate) : "white")
+      .style("fill", d => color(countyByIdPrev(d)) ? color(countyByIdPrev(d).count) : "white")
+      // .style("fill", d => color(countyById(d)) ? color(countyById(d).rate) : "white")
       .on("mouseover", mouseOver)
       .on("mouseout", mouseOut)
   }
