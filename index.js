@@ -15,6 +15,9 @@ let svg = d3.select('.map-box')
 queue()
   .defer(d3.json, "/static/data/usRobust.json")
   .defer(d3.csv, "/static/data/data.csv")
+  .defer(d3.csv, "/static/data/County_Previous_2021.csv")
+  .defer(d3.csv, "/static/data/County_Current_2022.csv")
+  .defer(d3.csv, "/static/data/County_Drop_2022.csv")
     .await(loadData)
 
 function loadData(error, usData, countyData) {
