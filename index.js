@@ -7,7 +7,36 @@ let val = element.getAttribute('value');
 stateId = +val || stateId;
 let filteredStateId = stateId.toString().length == 2? stateId : `0${stateId}`;
 let stateFromCounty = countyId => countyId.length == 5 ? countyId.slice(0, 2) : `0${countyId[0]}`;
-let svg = d3.select('.map-box')
+let view = ''; 
+let setView;
+let selectView = d3.select("#nav-select-view")
+selectView
+.append("input").attr("type", "button")
+.attr("value", "previous")
+.attr("onclick", "setView('test')");
+
+setView = function(v){
+    view = v;
+  console.log(view);
+};
+
+selectView
+.append("input").attr("type", "button")
+.attr("value", "current")
+.attr("onclick", "console.log('somethingneat')")
+  
+selectView
+  .append("input").attr("type", "button")
+  .attr("value", "dropped")
+  .attr("onclick", "console.log('somethingneat')")
+
+selectView
+  .append("input").attr("type", "button")
+  .attr("value", "percentage-dropped")
+  .attr("onclick", "console.log('somethingneat')")
+console.log('view', view);
+
+  let svg = d3.select('.map-box')
   .append('svg')
   .attr('width', width)
   .attr('height', height)
@@ -21,6 +50,7 @@ queue()
     .await(loadData)
 
 function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDrop) {
+  view = countyPrev;
   let stateName = usData.objects.counties.geometries.find(el => el.properties.stateCode == stateId).properties.stateName;
   if (error) throw error;
   d3.select(".state-header")
