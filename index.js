@@ -45,15 +45,16 @@ function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDr
     .features.filter(d => d.id === stateId)[0];
   let stateCounties = topojson.feature(usData, usData.objects.counties)
     .features.filter(d => d.properties.stateCode == filteredStateId);
-  let countyRatings = countyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
-  // let countyRatingsPrev = view.filter(d => stateFromCounty(d.id).toString() == filteredStateId.toString());
+  let countyRatings = view.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
   let countyRatingsPrev = countyPrev.filter(d => stateFromCounty(d.id).toString() == filteredStateId.toString());
-  // let countyRatingsCurrent = countyCurrent.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
+  let countyRatingsCurrent = countyCurrent.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
   let countyRatingsDrop = countyDrop.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
-  // console.log(filteredStateId, countyRatingsCurrent);
-  let domainMax = d3.max(countyRatingsPrev, d => +d.count);
+  let maxCheck = countyRatingsDrop;
+  console.log('maxCheck', maxCheck);
+  let domainMax = d3.max(maxCheck, d => +d.count);
+  // let domainMax = d3.max(countyRatings, d => +d.count);
   // let domainMax = d3.max(countyRatings, d => +d.rate);
-  console.log(domainMax);
+  console.log('max', domainMax);
   color_domain = d3.range(0, domainMax, domainMax / 12);
   let color = d3.scaleThreshold()
     .domain(color_domain)
@@ -71,18 +72,12 @@ function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDr
     .translate(t)
 
   let countyById = county => countyData.find(el => el.id == county.id);
-  // let countyByView = function (county) { 
-  //   return view.find( function (el) { 
-  //     console.log('el from view', el, view);
-  //   return    el.id == county.id;
-  //   })
-  // };
   let countyByView = county => view.find(el => el.id == county.id);
   let countyByIdCurr = county => countyCurrent.find(el => el.id == county.id);
   let countyByIdPrev = county => countyPrev.find(el => el.id == county.id);
   let countyByIdDrop = county => countyDrop.find(el => el.id == county.id);
   function mouseOver(d) {
-    // console.log(d, countyByIdPrev(d), countyByIdCurr(d), countyByIdDrop(d));
+    console.log(d, countyByIdPrev(d), countyByIdCurr(d), countyByIdDrop(d));
     d3.select(this)
       .transition()
       .duration(200)
@@ -90,7 +85,13 @@ function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDr
       .style("stroke-width", 3)
     this.parentNode.appendChild(this);
     d3.select(".dash-hover")
-      .text(`${countyByIdPrev(d).County} ${countyByIdDrop(d).count/countyByIdPrev(d).count}`)
+      .text(`${countyByIdPrev(d).County}`)
+      .text(`2021 Voter Count: ${countyByIdPrev(d).count}`)
+      .text(`2022 Voter Count: ${countyByIdCurr(d).count}`)
+      .text(`Total Voters Purged: ${countyByIdDrop(d).count}`)
+      .text(`Purged Percentage: ${countyByIdDrop(d).count/countyByIdPrev(d).count}%`)
+      // .text(`${countyByIdPrev(d).County} ${countyByIdDrop(d).count / countyByIdPrev(d).count}`)
+      // .text(`${countyByIdPrev(d).County} ${countyByIdDrop(d).count / countyByIdPrev(d).count}`)
       // .text(`${countyById(d).name} ${countyById(d).rate}`);
   }
 
@@ -119,7 +120,24 @@ function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDr
   renderStateCounties();
 
   setView = function (v) {
+
     // view = v;
+    if (v == "current"){
+      view = countyCurrent; 
+      maxCheck = countyRatingsCurrent;
+    } else if (v == "previous"){
+      view = countyPrev;
+      maxCheck = countyRatingsPrev;
+    } else if (v == "dropped"){
+      view = countyDrop;
+      maxCheck = countyRatingsDrop;
+    } else if (v == "percentage-dropped"){
+      view = countyDrop / countyPrev;
+      maxCheck = countyRatingsDrop/countyRatingsPrev;
+    } else {
+      view = countyCurrent;
+      maxCheck = countyRatingsPrev;
+    }
     renderStateCounties();
     console.log("view btn", view, v);
   };
