@@ -10,31 +10,6 @@ let stateFromCounty = countyId => countyId.length == 5 ? countyId.slice(0, 2) : 
 let view = ''; 
 let setView;
 let selectView = d3.select("#nav-select-view")
-selectView
-.append("input").attr("type", "button")
-.attr("value", "previous")
-.attr("onclick", "setView('test')");
-
-setView = function(v){
-    view = v;
-  console.log(view);
-};
-
-selectView
-.append("input").attr("type", "button")
-.attr("value", "current")
-.attr("onclick", "console.log('somethingneat')")
-  
-selectView
-  .append("input").attr("type", "button")
-  .attr("value", "dropped")
-  .attr("onclick", "console.log('somethingneat')")
-
-selectView
-  .append("input").attr("type", "button")
-  .attr("value", "percentage-dropped")
-  .attr("onclick", "console.log('somethingneat')")
-console.log('view', view);
 
   let svg = d3.select('.map-box')
   .append('svg')
@@ -51,6 +26,7 @@ queue()
 
 function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDrop) {
   view = countyPrev;
+  console.log('county data', view);
   let stateName = usData.objects.counties.geometries.find(el => el.properties.stateCode == stateId).properties.stateName;
   if (error) throw error;
   d3.select(".state-header")
@@ -70,11 +46,11 @@ function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDr
   let stateCounties = topojson.feature(usData, usData.objects.counties)
     .features.filter(d => d.properties.stateCode == filteredStateId);
   let countyRatings = countyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
+  // let countyRatingsPrev = view.filter(d => stateFromCounty(d.id).toString() == filteredStateId.toString());
   let countyRatingsPrev = countyPrev.filter(d => stateFromCounty(d.id).toString() == filteredStateId.toString());
-  // let countyRatingsPrev = countyPrev.filter(d => stateFromCounty(d.id).toString() == filteredStateId.toString());
-  let countyRatingsCurrent = countyCurrent.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
+  // let countyRatingsCurrent = countyCurrent.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
   let countyRatingsDrop = countyDrop.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
-  console.log(filteredStateId, countyRatingsCurrent);
+  // console.log(filteredStateId, countyRatingsCurrent);
   let domainMax = d3.max(countyRatingsPrev, d => +d.count);
   // let domainMax = d3.max(countyRatings, d => +d.rate);
   console.log(domainMax);
@@ -95,11 +71,18 @@ function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDr
     .translate(t)
 
   let countyById = county => countyData.find(el => el.id == county.id);
+  // let countyByView = function (county) { 
+  //   return view.find( function (el) { 
+  //     console.log('el from view', el, view);
+  //   return    el.id == county.id;
+  //   })
+  // };
+  let countyByView = county => view.find(el => el.id == county.id);
   let countyByIdCurr = county => countyCurrent.find(el => el.id == county.id);
   let countyByIdPrev = county => countyPrev.find(el => el.id == county.id);
   let countyByIdDrop = county => countyDrop.find(el => el.id == county.id);
   function mouseOver(d) {
-    console.log(d, countyByIdPrev(d), countyByIdCurr(d), countyByIdDrop(d));
+    // console.log(d, countyByIdPrev(d), countyByIdCurr(d), countyByIdDrop(d));
     d3.select(this)
       .transition()
       .duration(200)
@@ -127,7 +110,7 @@ function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDr
       .enter()
       .append("path")
       .attr("d", path)
-      .style("fill", d => color(countyByIdPrev(d)) ? color(countyByIdPrev(d).count) : "white")
+      .style("fill", d => color(countyByView(d)) ? color(countyByView(d).count) : "white")
       // .style("fill", d => color(countyById(d)) ? color(countyById(d).rate) : "white")
       .on("mouseover", mouseOver)
       .on("mouseout", mouseOut)
@@ -135,4 +118,30 @@ function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDr
   
   renderStateCounties();
 
+  setView = function (v) {
+    // view = v;
+    renderStateCounties();
+    console.log("view btn", view, v);
+  };
+  selectView
+    .append("input").attr("type", "button")
+    .attr("value", "previous")
+    .attr("onclick", "setView('previous')");
+  
+  selectView
+    .append("input").attr("type", "button")
+    .attr("value", "current")
+    .attr("onclick", "setView('current')");
+  
+  selectView
+    .append("input").attr("type", "button")
+    .attr("value", "dropped")
+    .attr("onclick", "setView('dropped')");
+  
+  selectView
+    .append("input").attr("type", "button")
+    .attr("value", "percentage-dropped")
+    .attr("onclick", "setView('percentage-dropped')");
+  
+  console.log('view', view);
 }
