@@ -19,28 +19,13 @@ let svg = d3.select('.map-box')
 
 queue()
   .defer(d3.json, "/static/data/usRobust.json")
-  .defer(d3.csv, "/static/data/data.csv")
-  .defer(d3.csv, "/static/data/County_Previous_2021.csv")
-  .defer(d3.csv, "/static/data/County_Current_2022.csv")
-  .defer(d3.csv, "/static/data/County_Drop_2022.csv")
-  .defer(d3.csv, "/static/data/County_withPercentage.csv")
-  // .defer(d3.csv, "https://back9.voterpurgeproject.org:8443/api/voterfile/tally/display?filename=/mnt/f/voterfiles/report-2022-09/counties_merged/AR-Drop_County.csv")
+  .defer(d3.csv, "https://back9.voterpurgeproject.org:8443/api/voterfile/tally/display?filename=/mnt/f/voterfiles/report-2022-09/counties_merged/ALL_New_County.csv")
+  .defer(d3.csv, "https://back9.voterpurgeproject.org:8443/api/voterfile/tally/display?filename=/mnt/f/voterfiles/report-2022-09/counties_merged/ALL_Drop_County.csv")
     .await(loadData)
 
-const Http = new XMLHttpRequest();
-// const url = 'https://jsonplaceholder.typicode.com/posts';
-const url = 'https://back9.voterpurgeproject.org:8443/api/voterfile/tally/display?filename=/mnt/f/voterfiles/report-2022-09/counties_merged/AR-Drop_County.csv'; 
-Http.open("GET", url);
-Http.send();
-
-Http.onreadystatechange = (e) => {
-  console.log("httpTest", Http.responseText)
-}
-
-function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDrop, countyDropPercentage, testData) {
-  view = countyPrev;
-  console.log('test data', testData);
-  console.log('county data', view);
+function loadData(error, usData, AllNewCountyData, AllDroppedCountyData) {
+  view = AllDroppedCountyData;
+  console.log('test data', AllDroppedCountyData, AllNewCountyData);
   let stateName = usData.objects.counties.geometries.find(el => el.properties.stateCode == stateId).properties.stateName;
   if (error) throw error;
   d3.select(".state-header")
@@ -59,11 +44,10 @@ function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDr
     .features.filter(d => d.id === stateId)[0];
   let stateCounties = topojson.feature(usData, usData.objects.counties)
     .features.filter(d => d.properties.stateCode == filteredStateId);
-  let countyRatings = view.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
-  let countyRatingsPrev = countyPrev.filter(d => stateFromCounty(d.id).toString() == filteredStateId.toString());
-  let countyRatingsCurrent = countyCurrent.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
-  let countyRatingsDrop = countyDrop.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
-  let countyRatingsDropPercentage = countyDropPercentage.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
+  // let countyRatingsPrev = countyPrev.filter(d => stateFromCounty(d.id).toString() == filteredStateId.toString());
+  // let countyRatingsCurrent = countyCurrent.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
+  // let countyRatingsDrop = countyDrop.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
+  let countyRatingsDropPercentage = AllDroppedCountyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
   
   setColor =  function(v){
     let domainMax = d3.max(v || [], d => +d.count);
@@ -88,12 +72,11 @@ function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDr
   
   let countyById = county => countyData.find(el => el.id == county.id);
   let countyByView = county => view.find(el => el.id == county.id);
-  let countyByIdCurr = county => countyCurrent.find(el => el.id == county.id);
+  // let countyByIdCurr = county => countyCurrent.find(el => el.id == county.id);
   let countyByIdPrev = county => countyPrev.find(el => el.id == county.id);
-  let countyByIdDrop = county => countyDrop.find(el => el.id == county.id);
+  // let countyByIdDrop = county => countyDrop.find(el => el.id == county.id);
   let countyByIdDropPercentage = county => countyDropPercentage.find(el => el.id == county.id);
   function mouseOver(d) {
-    // console.log(d, countyByIdPrev(d), countyByIdCurr(d), countyByIdDrop(d));
     d3.select(this)
       .transition()
       .duration(200)
@@ -131,30 +114,16 @@ function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDr
   setColor(countyRatingsDropPercentage);
   renderStateCounties();
   setView = function (v) {
-    // view = v;
-    if (v == "current"){
-      view = countyCurrent; 
-      setColor(countyRatingsCurrent);
-      renderStateCounties();
-    } else if (v == "previous"){
+    if (v == "previous"){
       view = countyPrev;
       setColor(countyRatingsPrev);
       renderStateCounties();
-    } else if (v == "dropped"){
-      view = countyDrop;
-      console.log(countyRatingsDrop)
-      setColor(countyRatingsDrop);
-      renderStateCounties();
     } else if (v == "percentage-dropped"){
       view = countyDropPercentage;
-      // view = countyDrop / countyPrev;
-      // let drop = countyRatingsDropPercentage.map((e, i) => e.count = e.count / countyRatingsPrev[i].count);
-      // let drop = countyRatingsDropPercentage.map((e, i) => e.count =  e.count/countyRatingsPrev[i].count);
-      // console.log('drop', drop);
       setColor(countyRatingsDropPercentage);
       renderStateCounties();
     } else {
-      view = countyCurrent;
+      view = countyPrev;
       setColor(countyRatingsPrev);
       renderStateCounties();
     }
@@ -166,21 +135,6 @@ function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDr
     .attr("type", "button")
     .attr("value", "previous")
     .attr("onclick", "setView('previous')");
-  
-  selectView
-    .append("input")
-    .attr("class", "button")
-    .attr("type", "button")
-    .attr("value", "current")
-    .attr("onclick", "setView('current')");
-  
-  selectView
-    .append("input")
-    .attr("class", "button")
-    .attr("type", "button")
-    .attr("value", "dropped")
-    .attr("onclick", "setView('dropped')");
-  
   selectView
     .append("input")
     .attr("class", "button")
