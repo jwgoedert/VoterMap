@@ -30,3 +30,17 @@
     stroke-width: 0.5px;
     stroke: rgba(13, 106, 106, 0.5);
 }
+.button {
+    width: 10%;
+    height: 32px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border-radius: 3px;
+    text-align: center;
+    display: inline-block;
+    border: none;
+    background-color: white;
+    color: darkgreen;
+    font-size: 1rem;
+    padding:0px 32px 48px 15px;
+    font-weight: bold;
+}

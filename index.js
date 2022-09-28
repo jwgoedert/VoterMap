@@ -23,9 +23,10 @@ queue()
   .defer(d3.csv, "/static/data/County_Previous_2021.csv")
   .defer(d3.csv, "/static/data/County_Current_2022.csv")
   .defer(d3.csv, "/static/data/County_Drop_2022.csv")
+  .defer(d3.csv, "/static/data/County_withPercentage.csv")
     .await(loadData)
 
-function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDrop) {
+function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDrop, countyDropPercentage) {
   view = countyPrev;
   console.log('county data', view);
   let stateName = usData.objects.counties.geometries.find(el => el.properties.stateCode == stateId).properties.stateName;
@@ -50,42 +51,37 @@ function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDr
   let countyRatingsPrev = countyPrev.filter(d => stateFromCounty(d.id).toString() == filteredStateId.toString());
   let countyRatingsCurrent = countyCurrent.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
   let countyRatingsDrop = countyDrop.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
-  let maxCheck = countyRatingsDrop;
-  // console.log('numbers', d3.max(countyRatingsPrev, d => +d.count), d3.max(countyRatingsCurrent, d => +d.count), d3.max(countyRatingsDrop, d => +d.count));
-  // console.log('maxCheck', maxCheck);
-  let countyByView = county => view.find(el => el.id == county.id);
+  let countyRatingsDropPercentage = countyDropPercentage.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
+  
   setColor =  function(v){
-    console.log('setcolor',v);
     let domainMax = d3.max(v || [], d => +d.count);
-    // let domainMax = d3.max(countyRatingsCurrent, d => +d.count);
-    // let domainMax = d3.max(countyRatings, d => +d.rate);
-    console.log('max', domainMax);
     color_domain = d3.range(0, domainMax, domainMax / 12);
-    console.log('colorDomain', color_domain);
     color = d3.scaleThreshold()
-      .domain(color_domain)
-      .range(["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]);
-  }
+    .domain(color_domain)
+    .range(["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]);
+    console.log('max', domainMax);
+  };
   // setColor(countyRatingsPrev);
   projection
-    .scale(1)
-    .translate([0, 0])
-
+  .scale(1)
+  .translate([0, 0])
+  
   let b = path.bounds(state),
-    s = 1.0 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
-    t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
-
+  s = 1.0 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+  t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+  
   projection
-    .scale(s)
-    .translate(t)
-
+  .scale(s)
+  .translate(t)
+  
   let countyById = county => countyData.find(el => el.id == county.id);
-  // let countyByView = county => view.find(el => el.id == county.id);
+  let countyByView = county => view.find(el => el.id == county.id);
   let countyByIdCurr = county => countyCurrent.find(el => el.id == county.id);
   let countyByIdPrev = county => countyPrev.find(el => el.id == county.id);
   let countyByIdDrop = county => countyDrop.find(el => el.id == county.id);
+  let countyByIdDropPercentage = county => countyDropPercentage.find(el => el.id == county.id);
   function mouseOver(d) {
-    console.log(d, countyByIdPrev(d), countyByIdCurr(d), countyByIdDrop(d));
+    // console.log(d, countyByIdPrev(d), countyByIdCurr(d), countyByIdDrop(d));
     d3.select(this)
       .transition()
       .duration(200)
@@ -94,9 +90,7 @@ function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDr
     this.parentNode.appendChild(this);
     d3.select(".dash-hover")
       .text(`${countyByIdPrev(d).County}`)
-      .text(`2021/2022/Dropped: ${countyByIdPrev(d).count}/${countyByIdCurr(d).count}/${countyByIdDrop(d).count}-${countyByIdDrop(d).count/countyByIdPrev(d).count}%`)
-      // .text(`${countyByIdPrev(d).County} ${countyByIdDrop(d).count / countyByIdPrev(d).count}`)
-      // .text(`${countyByIdPrev(d).County} ${countyByIdDrop(d).count / countyByIdPrev(d).count}`)
+      .text(`${countyByIdPrev(d).County} 2021/2022/Dropped: ${countyByIdPrev(d).count}/${countyByIdCurr(d).count}/${countyByIdDrop(d).count}-${countyByIdDropPercentage(d).count}%`)
       // .text(`${countyById(d).name} ${countyById(d).rate}`);
   }
 
@@ -122,57 +116,64 @@ function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDr
       .on("mouseover", mouseOver)
       .on("mouseout", mouseOut)
   }
-  setColor();
+  setColor(countyRatingsDropPercentage);
   renderStateCounties();
   setView = function (v) {
     // view = v;
     if (v == "current"){
       view = countyCurrent; 
-            // maxCheck = countyRatingsCurrent;
-            setColor(countyRatingsCurrent);
-      // renderStateCounties();
+      setColor(countyRatingsCurrent);
+      renderStateCounties();
     } else if (v == "previous"){
       view = countyPrev;
-            // maxCheck = countyRatingsPrev;
-            setColor(countyRatingsPrev);
-      // renderStateCounties();
+      setColor(countyRatingsPrev);
+      renderStateCounties();
     } else if (v == "dropped"){
       view = countyDrop;
-            // maxCheck = countyRatingsDrop;
-            setColor(countyRatingsDrop);
+      console.log(countyRatingsDrop)
+      setColor(countyRatingsDrop);
       renderStateCounties();
     } else if (v == "percentage-dropped"){
-      view = countyDrop / countyPrev;
-            // maxCheck = countyRatingsDrop/countyRatingsPrev;
-            setColor(countyRatingsDrop/countyRatingsPrev);
-      // renderStateCounties();
+      view = countyDropPercentage;
+      // view = countyDrop / countyPrev;
+      // let drop = countyRatingsDropPercentage.map((e, i) => e.count = e.count / countyRatingsPrev[i].count);
+      // let drop = countyRatingsDropPercentage.map((e, i) => e.count =  e.count/countyRatingsPrev[i].count);
+      // console.log('drop', drop);
+      setColor(countyRatingsDropPercentage);
+      renderStateCounties();
     } else {
       view = countyCurrent;
-            // maxCheck = countyRatingsPrev;
-            setColor(countyRatingsPrev);
-      // renderStateCounties();
+      setColor(countyRatingsPrev);
+      renderStateCounties();
     }
     renderStateCounties();
-    console.log("view btn", view, v);
   };
   selectView
-    .append("input").attr("type", "button")
+    .append("input")
+    .attr("class", "button")
+    .attr("type", "button")
     .attr("value", "previous")
     .attr("onclick", "setView('previous')");
   
   selectView
-    .append("input").attr("type", "button")
+    .append("input")
+    .attr("class", "button")
+    .attr("type", "button")
     .attr("value", "current")
     .attr("onclick", "setView('current')");
   
   selectView
-    .append("input").attr("type", "button")
+    .append("input")
+    .attr("class", "button")
+    .attr("type", "button")
     .attr("value", "dropped")
     .attr("onclick", "setView('dropped')");
   
   selectView
-    .append("input").attr("type", "button")
-    .attr("value", "percentage-dropped")
+    .append("input")
+    .attr("class", "button")
+    .attr("type", "button")
+    .attr("value", "percentage")
     .attr("onclick", "setView('percentage-dropped')");
   
   console.log('view', view);
