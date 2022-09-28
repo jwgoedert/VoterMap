@@ -24,17 +24,29 @@ queue()
   .defer(d3.csv, "/static/data/County_Current_2022.csv")
   .defer(d3.csv, "/static/data/County_Drop_2022.csv")
   .defer(d3.csv, "/static/data/County_withPercentage.csv")
+  // .defer(d3.csv, "https://back9.voterpurgeproject.org:8443/api/voterfile/tally/display?filename=/mnt/f/voterfiles/report-2022-09/counties_merged/AR-Drop_County.csv")
     .await(loadData)
 
-function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDrop, countyDropPercentage) {
+const Http = new XMLHttpRequest();
+// const url = 'https://jsonplaceholder.typicode.com/posts';
+const url = 'https://back9.voterpurgeproject.org:8443/api/voterfile/tally/display?filename=/mnt/f/voterfiles/report-2022-09/counties_merged/AR-Drop_County.csv'; 
+Http.open("GET", url);
+Http.send();
+
+Http.onreadystatechange = (e) => {
+  console.log("httpTest", Http.responseText)
+}
+
+function loadData(error, usData, countyData, countyPrev, countyCurrent, countyDrop, countyDropPercentage, testData) {
   view = countyPrev;
+  console.log('test data', testData);
   console.log('county data', view);
   let stateName = usData.objects.counties.geometries.find(el => el.properties.stateCode == stateId).properties.stateName;
   if (error) throw error;
   d3.select(".state-header")
     .text(stateName);
   let projection = stateId == 2 ?
-    d3.geoAlbers() : d3.geoMercator()
+  d3.geoAlbers() : d3.geoMercator()
       // let projection = d3.geoEquirectangular()
       .precision(0)
       .scale(height * 2)
