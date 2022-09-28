@@ -12,7 +12,7 @@ let setView;
 let selectView = d3.select("#nav-select-view")
 let color;
 
-  let svg = d3.select('.map-box')
+let svg = d3.select('.map-box')
   .append('svg')
   .attr('width', width)
   .attr('height', height)
