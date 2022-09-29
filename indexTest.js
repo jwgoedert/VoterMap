@@ -150,4 +150,5 @@ function loadData(error, usData, AllNewCountyData, AllDropCountyData) {
     .attr("onclick", "setView('percentage-dropped')");
 
   // console.log('view', view);
+  setView('percent');
 }
