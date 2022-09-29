@@ -37,9 +37,12 @@ function loadData(error, usData, AllDropCountyData) {
     .features.filter(d => d.properties.stateCode == filteredStateId);
   let countyDropData = AllDropCountyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
   let domainMax = d3.max(countyDropData || [], d => +d.key_pct*1000);
-    color_domain = d3.range(0, domainMax, domainMax / 12);
+  let domainMin = d3.min(countyDropData || [], d => +d.key_pct * 1000);
+    
+    color_domain = d3.range(domainMin, domainMax, domainMax / 12);
     color = d3.scaleThreshold()
       .domain(color_domain)
+    // .range(["red", "green", "blue", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "orange", "yellow"]);
       .range(["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]);
 
   projection
@@ -62,7 +65,7 @@ function loadData(error, usData, AllDropCountyData) {
     d3.select(this)
       .style("fill", "orange");
     d3.select(".selected")
-      .text(`Selected: ${ countyByView(d).County } ${ countyByView(d).key_pct } % -${countyByView(d).count}`);
+      .text(`Selected: ${ countyByView(d).County } ${ countyByView(d).key_pct } % _  ${countyByView(d).count}`);
   }
 
   function mouseOver(d) {
