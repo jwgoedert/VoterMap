@@ -41,6 +41,9 @@ function loadData(error, usData, AllDropCountyData) {
   let stateCounties = topojson.feature(usData, usData.objects.counties)
     .features.filter(d => d.properties.stateCode == filteredStateId);
   let countyDropData = AllDropCountyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
+  // let countyDropData = AllDropCountyData.filter(d => d.County != "NOT_MATCHED" ? stateFromCounty(d.id) == filteredStateId.toString() :{});
+  // countyDropData = countyDropData.filter(f => f.County !== "NOT_MATCHED")
+  // countyDropData = countyDropData.filter(f => f.County !== "NOT_MATCHED" ?  f : {}); 
   let domainMax = d3.max(countyDropData || [], d => +d.key_pct*1000);
   let domainMin = d3.min(countyDropData || [], d => +d.key_pct * 1000);
     
@@ -103,15 +106,10 @@ function loadData(error, usData, AllDropCountyData) {
     .on("mouseout", mouseOut)
     .on("click", click)
   }
-  // Color Scale Legend Test
-  // const colorScale = d3.scaleThreshold()
-  //   .domain([100000, 1000000, 10000000, 30000000, 100000000, 500000000])
-  //   .range(d3.schemeOrRd[7]);
-  
+
   function renderLegend(){
     const x = d3.scaleLinear()
       .domain([0, domainMax])
-      // .rangeRound([600, 860]);
 
     const legend = legendDiv.append("g")
       .attr("id", "legend");
