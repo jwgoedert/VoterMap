@@ -14,7 +14,7 @@ let svg = d3.select('.map-box')
   .attr('width', width)
   .attr('height', height)
 
-let legend = d3.select('.legend')
+let legendDiv = d3.select('.legend')
   .append('svg')
   .attr('width', width)
   .attr('height', 32)
@@ -108,14 +108,12 @@ function loadData(error, usData, AllDropCountyData) {
   //   .domain([100000, 1000000, 10000000, 30000000, 100000000, 500000000])
   //   .range(d3.schemeOrRd[7]);
   
-  renderStateCounties();
-  renderLegend();
   function renderLegend(){
     const x = d3.scaleLinear()
-      .domain([domainMin, 75.1])
-      .rangeRound([600, 860]);
+      .domain([0, domainMax])
+      // .rangeRound([600, 860]);
 
-    const legend = svg.append("g")
+    const legend = legendDiv.append("g")
       .attr("id", "legend");
 
     const legend_entry = legend.selectAll("g.legend")
@@ -128,13 +126,15 @@ function loadData(error, usData, AllDropCountyData) {
       .enter().append("g")
       .attr("class", "legend_entry");
 
-    const ls_w = width/3,
+    const ls_w = width/12,
       ls_h = 20;
 
     legend_entry.append("rect")
-      .attr("y", height-20)
+      .attr("y", ls_h)
       .attr("x", function (d, i) {
-        return height - (i * ls_h) - 2 * ls_h;
+        console.log(x,i)
+        // return width - (i * ls_h) - 2 * ls_h;
+        return width - (i * ls_w) - 1 * ls_w;
       })
       .attr("width", ls_w)
       .attr("height", ls_h)
@@ -143,19 +143,21 @@ function loadData(error, usData, AllDropCountyData) {
       })
       .style("opacity", 0.8);
 
-    legend_entry.append("text")
-      .attr("x", 50)
-      .attr("y", function (d, i) {
-        return height - (i * ls_h) - ls_h - 6;
-      })
-      .text(function (d, i) {
-        if (i === 0) return "< " + d[1] / 1000000 + " m";
-        if (d[1] < d[0]) return d[0] / 1000000 + " m +";
-        return d[0] / 1000000 + " m - " + d[1] / 1000000 + " m";
-      });
+    // legend_entry.append("text")
+    //   .attr("x", 50)
+    //   .attr("y", function (d, i) {
+    //     return height - (i * ls_h) - ls_h - 6;
+    //   })
+    //   .text(function (d, i) {
+    //     if (i === 0) return "< " + d[1] / 1000000 + " m";
+    //     if (d[1] < d[0]) return d[0] / 1000000 + " m +";
+    //     return d[0] / 1000000 + " m - " + d[1] / 1000000 + " m";
+    //   });
 
-    legend.append("text").attr("x", 15).attr("y", 280).text("Population (Million)");
+    // legend.append("text").attr("x", 15).attr("y", 280).text("Population (Million)");
   }
+  renderStateCounties();
+  renderLegend();
   
   
 }
