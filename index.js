@@ -25,6 +25,11 @@ queue()
   .await(loadData)
 
 function loadData(error, usData, AllDropCountyData) {
+  console.log(AllDropCountyData);
+  AllDropCountyData = AllDropCountyData.filter(e => e.County !== "NOT_MATCHED" || undefined);
+  // AllDropCountyData = AllDropCountyData.filter(e => e.County !== "NOT_MATCHED" || undefined);
+  console.log(AllDropCountyData);
+
   let stateName = usData.objects.counties.geometries.find(el => el.properties.stateCode == stateId).properties.stateName;
   if (error) throw error;
   d3.select(".state-header")
@@ -41,9 +46,6 @@ function loadData(error, usData, AllDropCountyData) {
   let stateCounties = topojson.feature(usData, usData.objects.counties)
     .features.filter(d => d.properties.stateCode == filteredStateId);
   let countyDropData = AllDropCountyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
-  // let countyDropData = AllDropCountyData.filter(d => d.County != "NOT_MATCHED" ? stateFromCounty(d.id) == filteredStateId.toString() :{});
-  // countyDropData = countyDropData.filter(f => f.County !== "NOT_MATCHED")
-  // countyDropData = countyDropData.filter(f => f.County !== "NOT_MATCHED" ?  f : {}); 
   let domainMax = d3.max(countyDropData || [], d => +d.key_pct*1000);
   let domainMin = d3.min(countyDropData || [], d => +d.key_pct * 1000);
     
@@ -76,7 +78,6 @@ function loadData(error, usData, AllDropCountyData) {
   }
 
   function mouseOver(d) {
-    console.log(d, this);
     d3.select(this)
       .transition()
       .duration(200)
@@ -115,12 +116,13 @@ function loadData(error, usData, AllDropCountyData) {
       .attr("id", "legend");
 
     const legend_entry = legend.selectAll("g.legend")
-      .data(color.range().reverse().map(function (d) {
-        console.log('test',d)
+      .data(color.range().reverse().map(function (d, i) {
         d = color.invertExtent(d);
-        if (d[0] == null) d[0] = x.domain()[0];
-        if (d[1] == null) d[1] = x.domain()[1];
-        console.log('d',d)
+        console.log(d,stateCounties, x.domain()[0], i, this);
+        // if (d[0] == null) d[0] = x.domain()[0];
+        if (d[0] == null || d[0] == undefined) d[0] = color.domain()[0];
+        if (d[1] == null || d[0] == undefined) d[1] = color.domain()[1];
+        // else d[i] = x.domain()[i]
         return d;
       }))
       .enter().append("g")
@@ -132,12 +134,14 @@ function loadData(error, usData, AllDropCountyData) {
     legend_entry.append("rect")
     .attr("x", function (d, i) {
       // return width - (i * ls_h) - 2 * ls_h;
-      return width - (i * ls_w) - 1 * ls_w;
+      // return width - (i * ls_w) - 1 * ls_w;
+      return width - (i * ls_w);
     })
-    .attr("y", ls_h)
+      .attr("y", ls_h)
       .attr("width", ls_w)
       .attr("height", ls_h)
       .style("fill", function (d) {
+        console.log(color(d[0]))
         return color(d[0]);
       })
       .style("opacity", 1);
@@ -146,11 +150,10 @@ function loadData(error, usData, AllDropCountyData) {
     .attr("x", function (d, i) {
       return height - (i * ls_h) - ls_h - 6;
     })
+    .attr("class", "legend-text")
     .attr("y", ls_h)
       .text(function (d, i) {
-        let percents = [];
-        console.log("textd", d, i);
-
+        // console.log("textd", d, i);
         if (i === 0) return domainMax/1000;
         if (i === 5) return domainMax/2000;
         if (i === 12) return 0;
