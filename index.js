@@ -117,10 +117,12 @@ function loadData(error, usData, AllDropCountyData) {
       .attr("id", "legend");
 
     const legend_entry = legend.selectAll("g.legend")
-      .data(color.range().map(function (d) {
+      .data(color.range().reverse().map(function (d) {
+        console.log('test',d)
         d = color.invertExtent(d);
         if (d[0] == null) d[0] = x.domain()[0];
         if (d[1] == null) d[1] = x.domain()[1];
+        console.log('d',d)
         return d;
       }))
       .enter().append("g")
@@ -132,7 +134,6 @@ function loadData(error, usData, AllDropCountyData) {
     legend_entry.append("rect")
       .attr("y", ls_h)
       .attr("x", function (d, i) {
-        console.log(x,i)
         // return width - (i * ls_h) - 2 * ls_h;
         return width - (i * ls_w) - 1 * ls_w;
       })
@@ -141,7 +142,7 @@ function loadData(error, usData, AllDropCountyData) {
       .style("fill", function (d) {
         return color(d[0]);
       })
-      .style("opacity", 0.8);
+      .style("opacity", 1);
 
     // legend_entry.append("text")
     //   .attr("x", 50)

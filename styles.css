@@ -5,7 +5,7 @@
 .map-box {
     width: 45%;
     display: inline-block;
-    background: lightcyan;
+    /* background: lightcyan; */
 }
 
 .dashboard {
