@@ -132,11 +132,11 @@ function loadData(error, usData, AllDropCountyData) {
       ls_h = 20;
 
     legend_entry.append("rect")
-      .attr("y", ls_h)
-      .attr("x", function (d, i) {
-        // return width - (i * ls_h) - 2 * ls_h;
-        return width - (i * ls_w) - 1 * ls_w;
-      })
+    .attr("x", function (d, i) {
+      // return width - (i * ls_h) - 2 * ls_h;
+      return width - (i * ls_w) - 1 * ls_w;
+    })
+    .attr("y", ls_h)
       .attr("width", ls_w)
       .attr("height", ls_h)
       .style("fill", function (d) {
@@ -144,18 +144,20 @@ function loadData(error, usData, AllDropCountyData) {
       })
       .style("opacity", 1);
 
-    // legend_entry.append("text")
-    //   .attr("x", 50)
-    //   .attr("y", function (d, i) {
-    //     return height - (i * ls_h) - ls_h - 6;
-    //   })
-    //   .text(function (d, i) {
-    //     if (i === 0) return "< " + d[1] / 1000000 + " m";
-    //     if (d[1] < d[0]) return d[0] / 1000000 + " m +";
-    //     return d[0] / 1000000 + " m - " + d[1] / 1000000 + " m";
-    //   });
+    legend_entry.append("text")
+    .attr("x", function (d, i) {
+      return height - (i * ls_h) - ls_h - 6;
+    })
+    .attr("y", ls_h)
+      .text(function (d, i) {
+        let percents = [];
+        console.log("textd", d, i);
 
-    // legend.append("text").attr("x", 15).attr("y", 280).text("Population (Million)");
+        if (i === 0) return domainMax/1000;
+        if (i === 5) return domainMax/2000;
+        if (i === 12) return 0;
+      });
+
   }
   renderStateCounties();
   renderLegend();
