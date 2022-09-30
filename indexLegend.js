@@ -78,7 +78,7 @@ function loadData(error, usData, AllDropCountyData) {
       .transition()
       .duration(200)
       .style("stroke", "orange")
-      .style("stroke-width", 2)
+      .style("stroke-width", 3)
   }
 
   function mouseOut(d) {
@@ -103,59 +103,8 @@ function loadData(error, usData, AllDropCountyData) {
     .on("mouseout", mouseOut)
     .on("click", click)
   }
-  // Color Scale Legend Test
-  // const colorScale = d3.scaleThreshold()
-  //   .domain([100000, 1000000, 10000000, 30000000, 100000000, 500000000])
-  //   .range(d3.schemeOrRd[7]);
   
   renderStateCounties();
   renderLegend();
-  function renderLegend(){
-    const x = d3.scaleLinear()
-      .domain([domainMin, 75.1])
-      .rangeRound([600, 860]);
-
-    const legend = svg.append("g")
-      .attr("id", "legend");
-
-    const legend_entry = legend.selectAll("g.legend")
-      .data(color.range().map(function (d) {
-        d = color.invertExtent(d);
-        if (d[0] == null) d[0] = x.domain()[0];
-        if (d[1] == null) d[1] = x.domain()[1];
-        return d;
-      }))
-      .enter().append("g")
-      .attr("class", "legend_entry");
-
-    const ls_w = width/3,
-      ls_h = 20;
-
-    legend_entry.append("rect")
-      .attr("y", height-20)
-      .attr("x", function (d, i) {
-        return height - (i * ls_h) - 2 * ls_h;
-      })
-      .attr("width", ls_w)
-      .attr("height", ls_h)
-      .style("fill", function (d) {
-        return color(d[0]);
-      })
-      .style("opacity", 0.8);
-
-    legend_entry.append("text")
-      .attr("x", 50)
-      .attr("y", function (d, i) {
-        return height - (i * ls_h) - ls_h - 6;
-      })
-      .text(function (d, i) {
-        if (i === 0) return "< " + d[1] / 1000000 + " m";
-        if (d[1] < d[0]) return d[0] / 1000000 + " m +";
-        return d[0] / 1000000 + " m - " + d[1] / 1000000 + " m";
-      });
-
-    legend.append("text").attr("x", 15).attr("y", 280).text("Population (Million)");
-  }
-  
   
 }
