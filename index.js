@@ -25,10 +25,10 @@ queue()
   .await(loadData)
 
 function loadData(error, usData, AllDropCountyData) {
-  console.log(AllDropCountyData);
+  // console.log(AllDropCountyData);
   AllDropCountyData = AllDropCountyData.filter(e => e.County !== "NOT_MATCHED" || undefined);
   // AllDropCountyData = AllDropCountyData.filter(e => e.County !== "NOT_MATCHED" || undefined);
-  console.log(AllDropCountyData);
+  // console.log(AllDropCountyData);
 
   let stateName = usData.objects.counties.geometries.find(el => el.properties.stateCode == stateId).properties.stateName;
   if (error) throw error;
@@ -54,6 +54,17 @@ function loadData(error, usData, AllDropCountyData) {
     .domain(color_domain)
     .range(["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]);
 
+  // color = d3.scaleOrdinal(d3.interpolatePiYG[.5].schemePiYG[9]);
+  // color = d3.scaleOrdinal().interpolatePiYG[.5].schemePiYG[9]
+  // color = d3.scaleOrdinal().interpolateRainbow(1);
+  // color = d3.scaleLinear().domain([1, 10])
+  //   .range(["white", "blue"])
+  // color = d3.scaleOrdinal(d3.schemeBrBG[11]);
+  // color = d3.scaleOrdinal(d3.schemeBlues[9]);
+
+  // color = d3.scaleLinear().domain(color_domain).range(["white", "blue"]);
+
+    
   projection
     .scale(1)
     .translate([0, 0])
