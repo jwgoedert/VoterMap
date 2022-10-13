@@ -46,13 +46,13 @@ function loadData(error, usData, AllDropCountyData) {
   let stateCounties = topojson.feature(usData, usData.objects.counties)
     .features.filter(d => d.properties.stateCode == filteredStateId);
   let countyDropData = AllDropCountyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
-  let domainMax = d3.max(countyDropData || [], d => +d.key_pct*1000);
+  let domainMax = d3.max(countyDropData || [], d => +d.key_pct * 1000);
   let domainMin = d3.min(countyDropData || [], d => +d.key_pct * 1000);
-    
-    color_domain = d3.range(domainMin, domainMax, domainMax / 12);
-    color = d3.scaleThreshold()
-      .domain(color_domain)
-      .range(["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]);
+
+  color_domain = d3.range(domainMin, domainMax, domainMax / 12);
+  color = d3.scaleThreshold()
+    .domain(color_domain)
+    .range(["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]);
 
   projection
     .scale(1)
@@ -66,15 +66,24 @@ function loadData(error, usData, AllDropCountyData) {
     .scale(s)
     .translate(t)
 
-  let countyByView = county => AllDropCountyData.find(el => el.id == county.id);
-  
+  let countyByView = function (county) {
+    if (county) {
+      console.log("county", county);
+      return AllDropCountyData.find(function (el) {
+        return el.id == county.id;
+      });
+    }
+  };
+  // let countyByView = county => AllDropCountyData.find(el => el.id == county.id);
+
   function click(d) {
+    console.log("click", d);
     d3.selectAll("path")
-      .style("fill", d => color(countyByView(d)) ? color(countyByView(d).key_pct*1000) : "white")
+      .style("fill", d => color(countyByView(d)) ? color(countyByView(d).key_pct * 1000) : "white")
     d3.select(this)
       .style("fill", "orange");
     d3.select(".selected")
-      .text(`Selected: ${ countyByView(d).County } ${ countyByView(d).key_pct } % _  ${countyByView(d).count}`);
+      .text(`Selected: ${countyByView(d).County} ${countyByView(d).key_pct} % _  ${countyByView(d).count}`);
   }
 
   function mouseOver(d) {
@@ -95,20 +104,20 @@ function loadData(error, usData, AllDropCountyData) {
 
   function renderStateCounties(v) {
     svg.append("g")
-    .attr("class", "mouse-out")
-    .selectAll("path")
-    .data(stateCounties)
-    .enter()
-    .append("path")
-    .attr("d", path)
-    .style("fill", d => color(countyByView(d)) ? color(countyByView(d).key_pct*1000) : "white")
-    .style("stroke", "rgba(13, 106, 106)")
-    .on("mouseover", mouseOver)
-    .on("mouseout", mouseOut)
-    .on("click", click)
+      .attr("class", "mouse-out")
+      .selectAll("path")
+      .data(stateCounties)
+      .enter()
+      .append("path")
+      .attr("d", path)
+      .style("fill", d => color(countyByView(d)) ? color(countyByView(d).key_pct * 1000) : "white")
+      .style("stroke", "rgba(13, 106, 106)")
+      .on("mouseover", mouseOver)
+      .on("mouseout", mouseOut)
+      .on("click", click)
   }
 
-  function renderLegend(){
+  function renderLegend() {
     const x = d3.scaleLinear()
       .domain([0, domainMax])
 
@@ -118,7 +127,7 @@ function loadData(error, usData, AllDropCountyData) {
     const legend_entry = legend.selectAll("g.legend")
       .data(color.range().reverse().map(function (d, i) {
         d = color.invertExtent(d);
-        console.log(d,stateCounties, x.domain()[0], i, this);
+        console.log(d, stateCounties, x.domain()[0], i, this);
         // if (d[0] == null) d[0] = x.domain()[0];
         if (d[0] == null || d[0] == undefined) d[0] = color.domain()[0];
         if (d[1] == null || d[0] == undefined) d[1] = color.domain()[1];
@@ -128,15 +137,15 @@ function loadData(error, usData, AllDropCountyData) {
       .enter().append("g")
       .attr("class", "legend_entry");
 
-    const ls_w = width/12,
+    const ls_w = width / 12,
       ls_h = 20;
 
     legend_entry.append("rect")
-    .attr("x", function (d, i) {
-      // return width - (i * ls_h) - 2 * ls_h;
-      // return width - (i * ls_w) - 1 * ls_w;
-      return width - (i * ls_w);
-    })
+      .attr("x", function (d, i) {
+        // return width - (i * ls_h) - 2 * ls_h;
+        // return width - (i * ls_w) - 1 * ls_w;
+        return width - (i * ls_w);
+      })
       .attr("y", ls_h)
       .attr("width", ls_w)
       .attr("height", ls_h)
@@ -147,21 +156,22 @@ function loadData(error, usData, AllDropCountyData) {
       .style("opacity", 1);
 
     legend_entry.append("text")
-    .attr("x", function (d, i) {
-      return height - (i * ls_h) - ls_h - 6;
-    })
-    .attr("class", "legend-text")
-    .attr("y", ls_h)
+      .attr("x", function (d, i) {
+        return height - (i * ls_h) - ls_h - 6;
+      })
+      .attr("class", "legend-text")
+      .attr("y", ls_h)
       .text(function (d, i) {
         // console.log("textd", d, i);
-        if (i === 0) return domainMax/1000;
-        if (i === 5) return domainMax/2000;
+        if (i === 0) return domainMax / 1000;
+        if (i === 5) return domainMax / 2000;
         if (i === 12) return 0;
       });
 
   }
   renderStateCounties();
   renderLegend();
-  
-  
+
+
 }
+
