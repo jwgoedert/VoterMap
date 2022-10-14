@@ -67,78 +67,46 @@ function loadData(error, usData, AllDropCountyData) {
   };
   // let countyByView = county => AllDropCountyData.find(el => el.id == county.id);
   function createLegend() {
-    let legend = d3.select('.legend')
-      .append('svg')
-      .attr('width', 32)
-      .attr('height', height)
-
-    const dataset = [12, 31, 22, 17, 25, 18, 29, 14, 9];
-
-    d3.select("body").selectAll("div")
-      .data(dataset)
-      .enter()
-      .append("div")
-      .attr("class", "bar")
-      // Add your code below this line
-      .style("height", d => d + "px")
-
-    // const dataset = [12, 31, 22, 17, 25, 18, 29, 14, 9];
-
     const w = 500;
-    const h = 100;
-
-    const svg = d3.select("body")
+    const h = 300;
+    let dataset = stateCounties;
+    const legend = d3.select(".legend")
       .append("svg")
       .attr("width", w)
       .attr("height", h);
 
-    svg.selectAll("rect")
+    legend.selectAll("rect")
       .data(dataset)
       .enter()
       .append("rect")
-      .attr("x", (d, i) => i * 30)
+      .attr("x", (d, i) => i * 5)
       .attr("y", 0)
-      .attr("width", 25)
+      .attr("width", width/dataset.length - 5)
       .attr("height", (d, i) => {
-        // Add your code below this line
-        return d * 3;
-
-
-        // Add your code above this line
+        return countyByView(d).key_pct * 25;
       });
-
-      // Add your code above this line
-      // .append('svg')
-      // .append('rect')
-      // let rect = legend.append("rect");
-      // rect
-      //   .data(stateCounties)
-      //   .enter()
-        // .append('svg')
-        // .append('rect')
-        // .attr("x", width - width / 8 * 7)
-        // .attr("y", 0)
-        // .attr('width', d => countyByView(d).key_pct * 100)
-        // .attr('height', 16)
-        // .attr('fill', "black")
-        // .attr('stroke', "black")
   }
   function createBarViz() {
-    d3.select('.legend')
-      .append('svg')
-      // .selectAll('rect')
-      .data(stateCounties)
+    const w = 500;
+    const h = 300;
+    let dataset = stateCounties;
+    const legend = d3.select(".legend")
+      .append("svg")
+      .attr("width", w)
+      .attr("height", h);
+
+    legend.selectAll("rect")
+      .data(dataset)
       .enter()
-      // .append('svg')
-      .append('rect')
-      .attr("x", 0)
+      .append("rect")
+      .attr("x", (d, i) => i * 5)
       .attr("y", 0)
-      .attr('width', d => countyByView(d).key_pct * 1000)
-      .attr('height', 16)
-      .attr('fill', "black")
-      .attr('stroke', "black")
+      .attr("width", width / dataset.length - 5)
+      .attr("height", (d, i) => {
+        return countyByView(d).key_pct * 25;
+      });
   }
-  createLegend();
+  // createLegend();
   // createBarViz();
   function click(d) {
     console.log("click", d);
