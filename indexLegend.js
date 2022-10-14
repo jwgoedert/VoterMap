@@ -16,8 +16,8 @@ let svg = d3.select('.map-box')
 
 let legend = d3.select('.legend')
   .append('svg')
-  .attr('width', width)
-  .attr('height', 32)
+  .attr('width', 48)
+  .attr('height', height)
 
 queue()
   .defer(d3.json, "/static/data/usRobust.json")

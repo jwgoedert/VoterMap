@@ -7,6 +7,10 @@
     display: inline-block;
     /* background: lightcyan; */
 }
+.legend {
+    width: 15%;
+    display: inline-block;
+}
 
 .dashboard {
     margin-left: 2rem;

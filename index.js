@@ -14,11 +14,6 @@ let svg = d3.select('.map-box')
   .attr('width', width)
   .attr('height', height)
 
-let legendDiv = d3.select('.legend')
-  .append('svg')
-  .attr('width', width)
-  .attr('height', 32)
-
 queue()
   .defer(d3.json, "/static/data/usRobust.json")
   .defer(d3.csv, "https://back9.voterpurgeproject.org:8443/api/voterfile/tally/display?filename=/mnt/f/voterfiles/report-2022-09/counties_merged/ALL_Drop_County.csv")
@@ -45,7 +40,6 @@ function loadData(error, usData, AllDropCountyData) {
   let countyDropData = AllDropCountyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
   let domainMax = d3.max(countyDropData || [], d => +d.key_pct * 1000);
   let domainMin = d3.min(countyDropData || [], d => +d.key_pct * 1000);
-  let domainData = d3.extent(countyDropData || [], d => +d.key_pct );
 
   color_domain = d3.range(domainMin, domainMax, domainMax/12);
   color = d3.scaleThreshold()
@@ -66,14 +60,26 @@ function loadData(error, usData, AllDropCountyData) {
 
   let countyByView = function (county) {
     if (county) {
-      // console.log("county", county);
       return AllDropCountyData.find(function (el) {
         return el.id == county.id;
       });
     }
   };
   // let countyByView = county => AllDropCountyData.find(el => el.id == county.id);
-
+  function createLegend() {
+    d3.select('.legend')
+      .data(stateCounties)
+      .enter()
+      .append('svg')
+      .append('rect')
+      .attr("x", width - width / 8 * 7)
+      .attr("y", 0)
+      .attr('width', width / 8)
+      .attr('height', height)
+      .attr('fill', "black")
+      .attr('stroke', "black")
+  }
+  createLegend();
   function click(d) {
     console.log("click", d);
     d3.selectAll("path")
@@ -100,6 +106,14 @@ function loadData(error, usData, AllDropCountyData) {
       .style("stroke", "rgba(13, 106, 106, 0.5)")
   }
 
+  // function appendLegend() {
+  //   legendDiv.append("rect")
+  //     .attr("x", 0)
+  //     .attr("y", 100)
+  //     .attr("width", 100)
+  //     .attr("height", 100)
+  // }
+
   function renderStateCounties(v) {
     svg.append("g")
       .attr("class", "mouse-out")
@@ -115,62 +129,9 @@ function loadData(error, usData, AllDropCountyData) {
       .on("click", click)
   }
 
-  // function renderLegend() {
-  //   const x = d3.scaleLinear()
-  //     .domain([0, domainMax])
-
-  //   const legend = legendDiv.append("g")
-  //     .attr("id", "legend");
-
-  //   const legend_entry = legend.selectAll("g.legend")
-  //     .data(color.range().reverse().map(function (d, i) {
-  //       d = color.invertExtent(d);
-  //       // console.log(d, stateCounties, x.domain()[0], i, this);
-  //       // if (d[0] == null) d[0] = x.domain()[0];
-  //       if (d[0] == null || d[0] == undefined) d[0] = color.domain()[0];
-  //       if (d[1] == null || d[0] == undefined) d[1] = color.domain()[1];
-  //       // else d[i] = x.domain()[i]
-  //       return d;
-  //     }))
-  //     .enter().append("g")
-  //     .attr("class", "legend_entry");
-
-  //   const ls_w = width / 12,
-  //     ls_h = 20;
-
-    // legend_entry.append("rect")
-    //   .attr("x", function (d, i) {
-    //     // return width - (i * ls_h) - 2 * ls_h;
-    //     // return width - (i * ls_w) - 1 * ls_w;
-    //     return width - (i * ls_w);
-    //   })
-    //   .attr("y", ls_h)
-    //   .attr("width", ls_w)
-    //   .attr("height", ls_h)
-    //   .style("fill", function (d) {
-    //     console.log(d, color(d[0]))
-    //     return color(d);
-    //     // return color(d[0]);
-    //   })
-    //   .style("opacity", 1);
-
-    // legend_entry.append("text")
-    //   .attr("x", function (d, i) {
-    //     return height - (i * ls_h) - ls_h - 6;
-    //   })
-    //   .attr("class", "legend-text")
-    //   .attr("y", ls_h)
-    //   .text(function (d, i) {
-    //     // console.log("textd", d, i);
-    //     if (i === 0) return domainMax / 1000;
-    //     if (i === 5) return domainMax / 2000;
-    //     if (i === 12) return 0;
-    //   });
-
-  // }
-  renderStateCounties();
-  // renderLegend();
-
+    renderStateCounties();
+    // appendLegend();
+  
 
 }
 
