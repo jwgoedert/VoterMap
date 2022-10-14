@@ -45,15 +45,13 @@ function loadData(error, usData, AllDropCountyData) {
   let countyDropData = AllDropCountyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
   let domainMax = d3.max(countyDropData || [], d => +d.key_pct * 1000);
   let domainMin = d3.min(countyDropData || [], d => +d.key_pct * 1000);
+  let domainData = d3.extent(countyDropData || [], d => +d.key_pct );
 
-  color_domain = d3.range(domainMin, domainMax, domainMax / 12);
+  color_domain = d3.range(domainMin, domainMax, domainMax/12);
   color = d3.scaleThreshold()
     .domain(color_domain)
     .range(["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]);
-  //  color = d3.scaleSequential().domain(color_domain)
-  //   .interpolator(d3.interpolatePurples);
-  
-    
+
   projection
     .scale(1)
     .translate([0, 0])
@@ -68,7 +66,7 @@ function loadData(error, usData, AllDropCountyData) {
 
   let countyByView = function (county) {
     if (county) {
-      console.log("county", county);
+      // console.log("county", county);
       return AllDropCountyData.find(function (el) {
         return el.id == county.id;
       });
@@ -117,60 +115,61 @@ function loadData(error, usData, AllDropCountyData) {
       .on("click", click)
   }
 
-  function renderLegend() {
-    const x = d3.scaleLinear()
-      .domain([0, domainMax])
+  // function renderLegend() {
+  //   const x = d3.scaleLinear()
+  //     .domain([0, domainMax])
 
-    const legend = legendDiv.append("g")
-      .attr("id", "legend");
+  //   const legend = legendDiv.append("g")
+  //     .attr("id", "legend");
 
-    const legend_entry = legend.selectAll("g.legend")
-      .data(color.range().reverse().map(function (d, i) {
-        d = color.invertExtent(d);
-        console.log(d, stateCounties, x.domain()[0], i, this);
-        // if (d[0] == null) d[0] = x.domain()[0];
-        if (d[0] == null || d[0] == undefined) d[0] = color.domain()[0];
-        if (d[1] == null || d[0] == undefined) d[1] = color.domain()[1];
-        // else d[i] = x.domain()[i]
-        return d;
-      }))
-      .enter().append("g")
-      .attr("class", "legend_entry");
+  //   const legend_entry = legend.selectAll("g.legend")
+  //     .data(color.range().reverse().map(function (d, i) {
+  //       d = color.invertExtent(d);
+  //       // console.log(d, stateCounties, x.domain()[0], i, this);
+  //       // if (d[0] == null) d[0] = x.domain()[0];
+  //       if (d[0] == null || d[0] == undefined) d[0] = color.domain()[0];
+  //       if (d[1] == null || d[0] == undefined) d[1] = color.domain()[1];
+  //       // else d[i] = x.domain()[i]
+  //       return d;
+  //     }))
+  //     .enter().append("g")
+  //     .attr("class", "legend_entry");
 
-    const ls_w = width / 12,
-      ls_h = 20;
+  //   const ls_w = width / 12,
+  //     ls_h = 20;
 
-    legend_entry.append("rect")
-      .attr("x", function (d, i) {
-        // return width - (i * ls_h) - 2 * ls_h;
-        // return width - (i * ls_w) - 1 * ls_w;
-        return width - (i * ls_w);
-      })
-      .attr("y", ls_h)
-      .attr("width", ls_w)
-      .attr("height", ls_h)
-      .style("fill", function (d) {
-        console.log(color(d[0]))
-        return color(d[0]);
-      })
-      .style("opacity", 1);
+    // legend_entry.append("rect")
+    //   .attr("x", function (d, i) {
+    //     // return width - (i * ls_h) - 2 * ls_h;
+    //     // return width - (i * ls_w) - 1 * ls_w;
+    //     return width - (i * ls_w);
+    //   })
+    //   .attr("y", ls_h)
+    //   .attr("width", ls_w)
+    //   .attr("height", ls_h)
+    //   .style("fill", function (d) {
+    //     console.log(d, color(d[0]))
+    //     return color(d);
+    //     // return color(d[0]);
+    //   })
+    //   .style("opacity", 1);
 
-    legend_entry.append("text")
-      .attr("x", function (d, i) {
-        return height - (i * ls_h) - ls_h - 6;
-      })
-      .attr("class", "legend-text")
-      .attr("y", ls_h)
-      .text(function (d, i) {
-        // console.log("textd", d, i);
-        if (i === 0) return domainMax / 1000;
-        if (i === 5) return domainMax / 2000;
-        if (i === 12) return 0;
-      });
+    // legend_entry.append("text")
+    //   .attr("x", function (d, i) {
+    //     return height - (i * ls_h) - ls_h - 6;
+    //   })
+    //   .attr("class", "legend-text")
+    //   .attr("y", ls_h)
+    //   .text(function (d, i) {
+    //     // console.log("textd", d, i);
+    //     if (i === 0) return domainMax / 1000;
+    //     if (i === 5) return domainMax / 2000;
+    //     if (i === 12) return 0;
+    //   });
 
-  }
+  // }
   renderStateCounties();
-  renderLegend();
+  // renderLegend();
 
 
 }
