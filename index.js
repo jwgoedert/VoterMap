@@ -67,19 +67,79 @@ function loadData(error, usData, AllDropCountyData) {
   };
   // let countyByView = county => AllDropCountyData.find(el => el.id == county.id);
   function createLegend() {
+    let legend = d3.select('.legend')
+      .append('svg')
+      .attr('width', 32)
+      .attr('height', height)
+
+    const dataset = [12, 31, 22, 17, 25, 18, 29, 14, 9];
+
+    d3.select("body").selectAll("div")
+      .data(dataset)
+      .enter()
+      .append("div")
+      .attr("class", "bar")
+      // Add your code below this line
+      .style("height", d => d + "px")
+
+    // const dataset = [12, 31, 22, 17, 25, 18, 29, 14, 9];
+
+    const w = 500;
+    const h = 100;
+
+    const svg = d3.select("body")
+      .append("svg")
+      .attr("width", w)
+      .attr("height", h);
+
+    svg.selectAll("rect")
+      .data(dataset)
+      .enter()
+      .append("rect")
+      .attr("x", (d, i) => i * 30)
+      .attr("y", 0)
+      .attr("width", 25)
+      .attr("height", (d, i) => {
+        // Add your code below this line
+        return d * 3;
+
+
+        // Add your code above this line
+      });
+
+      // Add your code above this line
+      // .append('svg')
+      // .append('rect')
+      // let rect = legend.append("rect");
+      // rect
+      //   .data(stateCounties)
+      //   .enter()
+        // .append('svg')
+        // .append('rect')
+        // .attr("x", width - width / 8 * 7)
+        // .attr("y", 0)
+        // .attr('width', d => countyByView(d).key_pct * 100)
+        // .attr('height', 16)
+        // .attr('fill', "black")
+        // .attr('stroke', "black")
+  }
+  function createBarViz() {
     d3.select('.legend')
+      .append('svg')
+      // .selectAll('rect')
       .data(stateCounties)
       .enter()
-      .append('svg')
+      // .append('svg')
       .append('rect')
-      .attr("x", width - width / 8 * 7)
+      .attr("x", 0)
       .attr("y", 0)
-      .attr('width', width / 8)
-      .attr('height', height)
+      .attr('width', d => countyByView(d).key_pct * 1000)
+      .attr('height', 16)
       .attr('fill', "black")
       .attr('stroke', "black")
   }
   createLegend();
+  // createBarViz();
   function click(d) {
     console.log("click", d);
     d3.selectAll("path")
