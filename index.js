@@ -40,9 +40,9 @@ function loadData(error, usData, AllDropCountyData) {
   let countyDropData = AllDropCountyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
   let domainMax = d3.max(countyDropData || [], d => +d.key_pct * 1000);
   let domainMin = d3.min(countyDropData || [], d => +d.key_pct * 1000);
-  let colorArray = ['#f7fcfd', '#e5f5f9', '#ccece6', '#99d8c9', '#66c2a4', '#41ae76', '#238b45', '#005824', '#003d19'];
+  let colorArray = ['#f7fcfd', '#e5f5f9', '#ccece6', '#99d8c9', '#66c2a4', '#41ae76', '#238b45', '#005824'];
 
-  color_domain = d3.range(domainMin, domainMax, (domainMax-domainMin)/9 );
+  color_domain = d3.range(domainMin, domainMax, (domainMax-domainMin)/8 );
   
   color = d3.scaleThreshold()
     .domain(color_domain)
