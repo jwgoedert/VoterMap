@@ -40,6 +40,7 @@ function loadData(error, usData, AllDropCountyData) {
   let countyDropData = AllDropCountyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
   let domainMax = d3.max(countyDropData || [], d => +d.key_pct * 1000);
   let domainMin = d3.min(countyDropData || [], d => +d.key_pct * 1000);
+  // let colorArray = [ '#e5f5f9', '#ccece6', '#99d8c9', '#66c2a4', '#41ae76', '#238b45', '#005824'];
   let colorArray = ['#f7fcfd', '#e5f5f9', '#ccece6', '#99d8c9', '#66c2a4', '#41ae76', '#238b45', '#005824'];
 
   color_domain = d3.range(domainMin, domainMax, (domainMax-domainMin)/8 );
@@ -95,7 +96,7 @@ function loadData(error, usData, AllDropCountyData) {
       .data(color_domain)
       .enter()
       .append("text")
-      .text(e => parseFloat(e/1000).toFixed(2))
+      .text((e, i) => i < color_domain.length -1 ? `${parseFloat(e/1000).toFixed(2)}%` : `${parseFloat(e/1000).toFixed(2)}+%`)
       .attr("height",space)
       .attr("width", space)
       .attr("x", (d, i) => i * width / dataset.length)
