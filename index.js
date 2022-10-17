@@ -89,27 +89,49 @@ function loadData(error, usData, AllDropCountyData) {
         return color.range()[i];
       })    
   }
-  function createBarViz() {
-    const w = 500;
-    const h = 300;
-    let dataset = stateCounties;
-    const legend = d3.select(".legend")
+  function createLegendH2() {
+    const w = height;
+    const h = 8;
+    let dataset = color_domain;
+    const legend = d3.select(".legend-text")
       .append("svg")
       .attr("width", w)
-      .attr("height", h);
+      .attr("height", 8)
+      // .attr("transform", "translate(32, -16)");
+
     legend.selectAll("rect")
       .data(dataset)
       .enter()
       .append("rect")
-      .attr("x", (d, i) => i * 5)
+      .attr("x", (d, i) => i * width / dataset.length)
       .attr("y", 0)
-      .attr("width", width / dataset.length - 5)
-      .attr("height", (d, i) => {
-        return countyByView(d).key_pct * 25;
-      });
+      .attr("height", 32)
+      .attr("width", width/color_domain.length)
+      .style("fill", (e, i) => {
+        return color.range()[i];
+      })
+  }
+
+  function createLegendH(){
+    const legend = d3.select('.legend-text')
+    // const legend = svg
+      .append("svg")
+      .attr("width", width)
+      .attr("height", 8)
+    legend.selectAll("rect")
+      .data(color_domain)
+      .enter()
+      .append("rect")
+      .attr("width", width/color_domain.length)
+      .attr("height", 8)
+      .attr("x", (e,i) => i * width/color_domain.length)
+      .attr("y", 8)
+      .style("fill", (e, i) => { return color.range()[i]});
   }
   createLegendV();
-  // createBarViz();
+  // createLegendH();
+  createLegendH2();
+  
   function click(d) {
     console.log("click", d);
     d3.selectAll("path")
@@ -161,6 +183,7 @@ function loadData(error, usData, AllDropCountyData) {
 
     renderStateCounties();
     // appendLegend();
+  createLegendH();
   
 
 }
