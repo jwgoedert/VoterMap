@@ -67,28 +67,27 @@ function loadData(error, usData, AllDropCountyData) {
     }
   };
   // let countyByView = county => AllDropCountyData.find(el => el.id == county.id);
-  function createLegend() {
-    const w = 32;
-    const h = 300;
+  function createLegendV() {
+    const w = 8;
+    const h = height;
     let dataset = color_domain;
     const legend = d3.select(".legend")
       .append("svg")
       .attr("width", w)
-      .attr("height", h);
+      .attr("height", height - 32)
+      .attr("transform", "translate(32, -16)");
 
     legend.selectAll("rect")
       .data(dataset)
       .enter()
       .append("rect")
-      .attr("x", (d, i) => i * 5)
-      .attr("y", 0)
-      .attr("width", width/dataset.length - 5)
-      .attr("height", (d, i) => {
-        return d/2;
-      })
+      .attr("x", 0)
+      .attr("y", (d, i) => i * height/dataset.length)
+      .attr("height", 32)
+      .attr("width", w)
       .style("fill", (e, i)=>{
         return color.range()[i];
-      })
+      })    
   }
   function createBarViz() {
     const w = 500;
@@ -109,7 +108,7 @@ function loadData(error, usData, AllDropCountyData) {
         return countyByView(d).key_pct * 25;
       });
   }
-  createLegend();
+  createLegendV();
   // createBarViz();
   function click(d) {
     console.log("click", d);
