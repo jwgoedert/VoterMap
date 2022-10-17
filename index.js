@@ -93,7 +93,7 @@ function loadData(error, usData, AllDropCountyData) {
   function createLegendH() {
     const w = height;
     const h = 8;
-    let space = width / color_domain.length - 8;
+    let space = width / color_domain.length;
     let dataset = color_domain;
     const legend = d3.select(".legend-text")
       .append("svg")
@@ -111,8 +111,8 @@ function loadData(error, usData, AllDropCountyData) {
       .append("rect")
       .attr("x", (d, i) => i * width / dataset.length)
       .attr("y", 0)
-      .attr("height", width / color_domain.length - 8)
-      .attr("width", width/color_domain.length - 8)
+      .attr("height", space - 8)
+      .attr("width", space - 8)
       .style("fill", (e, i) => {
         return color.range()[i];
       })
@@ -121,11 +121,11 @@ function loadData(error, usData, AllDropCountyData) {
       .data(countyDropData)
       .enter()
       .append("text")
-      .text( e => e.key_pct)
-      .attr("height", width / color_domain.length - 8)
-      .attr("width", width / color_domain.length - 8)
+      .text(e => e.key_pct)
+      .attr("height",space)
+      .attr("width", space)
       .attr("x", (d, i) => i * width / dataset.length)
-      .attr("y", 32)
+      .attr("y", 16)
     }
 
   // createLegendV();
