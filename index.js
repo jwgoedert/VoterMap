@@ -40,11 +40,12 @@ function loadData(error, usData, AllDropCountyData) {
   let countyDropData = AllDropCountyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
   let domainMax = d3.max(countyDropData || [], d => +d.key_pct * 1000);
   let domainMin = d3.min(countyDropData || [], d => +d.key_pct * 1000);
+  let colorArray = ["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]
 
   color_domain = d3.range(domainMin, domainMax, domainMax/12);
   color = d3.scaleThreshold()
     .domain(color_domain)
-    .range(["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]);
+    .range(colorArray);
 
   projection
     .scale(1)
@@ -67,9 +68,9 @@ function loadData(error, usData, AllDropCountyData) {
   };
   // let countyByView = county => AllDropCountyData.find(el => el.id == county.id);
   function createLegend() {
-    const w = 500;
+    const w = 32;
     const h = 300;
-    let dataset = stateCounties;
+    let dataset = color_domain;
     const legend = d3.select(".legend")
       .append("svg")
       .attr("width", w)
@@ -83,8 +84,11 @@ function loadData(error, usData, AllDropCountyData) {
       .attr("y", 0)
       .attr("width", width/dataset.length - 5)
       .attr("height", (d, i) => {
-        return countyByView(d).key_pct * 25;
-      });
+        return d/2;
+      })
+      .style("fill", (e, i)=>{
+        return color.range()[i];
+      })
   }
   function createBarViz() {
     const w = 500;
@@ -94,7 +98,6 @@ function loadData(error, usData, AllDropCountyData) {
       .append("svg")
       .attr("width", w)
       .attr("height", h);
-
     legend.selectAll("rect")
       .data(dataset)
       .enter()
@@ -106,7 +109,7 @@ function loadData(error, usData, AllDropCountyData) {
         return countyByView(d).key_pct * 25;
       });
   }
-  // createLegend();
+  createLegend();
   // createBarViz();
   function click(d) {
     console.log("click", d);
