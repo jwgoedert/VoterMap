@@ -89,7 +89,7 @@ function loadData(error, usData, AllDropCountyData) {
         return color.range()[i];
       })    
   }
-  function createLegendH2() {
+  function createLegendH() {
     const w = height;
     const h = 8;
     let dataset = color_domain;
@@ -97,7 +97,6 @@ function loadData(error, usData, AllDropCountyData) {
       .append("svg")
       .attr("width", w)
       .attr("height", 8)
-      // .attr("transform", "translate(32, -16)");
 
     legend.selectAll("rect")
       .data(dataset)
@@ -112,25 +111,8 @@ function loadData(error, usData, AllDropCountyData) {
       })
   }
 
-  function createLegendH(){
-    const legend = d3.select('.legend-text')
-    // const legend = svg
-      .append("svg")
-      .attr("width", width)
-      .attr("height", 8)
-    legend.selectAll("rect")
-      .data(color_domain)
-      .enter()
-      .append("rect")
-      .attr("width", width/color_domain.length)
-      .attr("height", 8)
-      .attr("x", (e,i) => i * width/color_domain.length)
-      .attr("y", 8)
-      .style("fill", (e, i) => { return color.range()[i]});
-  }
-  createLegendV();
-  // createLegendH();
-  createLegendH2();
+  // createLegendV();
+  createLegendH();
   
   function click(d) {
     console.log("click", d);
@@ -158,14 +140,6 @@ function loadData(error, usData, AllDropCountyData) {
       .style("stroke", "rgba(13, 106, 106, 0.5)")
   }
 
-  // function appendLegend() {
-  //   legendDiv.append("rect")
-  //     .attr("x", 0)
-  //     .attr("y", 100)
-  //     .attr("width", 100)
-  //     .attr("height", 100)
-  // }
-
   function renderStateCounties(v) {
     svg.append("g")
       .attr("class", "mouse-out")
@@ -180,11 +154,6 @@ function loadData(error, usData, AllDropCountyData) {
       .on("mouseout", mouseOut)
       .on("click", click)
   }
-
     renderStateCounties();
-    // appendLegend();
-  createLegendH();
-  
-
 }
 
