@@ -40,18 +40,14 @@ function loadData(error, usData, AllDropCountyData) {
   let countyDropData = AllDropCountyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
   let domainMax = d3.max(countyDropData || [], d => +d.key_pct * 1000);
   let domainMin = d3.min(countyDropData || [], d => +d.key_pct * 1000);
-  // let colorArray = ["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]
-  // let colorArray = ["#dcdcdc", "#bdc9be", "#97b0a0", "#719782", "#4b7e64", "#256546", "#004d28"]
-  let colorArray = ['#f7fcfd', '#e5f5f9', '#ccece6', '#99d8c9', '#66c2a4', '#41ae76', '#238b45', '#005824'];
+  let colorArray = ['#f7fcfd', '#e5f5f9', '#ccece6', '#99d8c9', '#66c2a4', '#41ae76', '#238b45', '#005824', '#003d19'];
 
-  // color_domain = d3.range(domainMin, domainMax, domainMax/colorArray.length);
   color_domain = d3.range(domainMin, domainMax, (domainMax-domainMin)/9 );
-  console.log("colorDomain", color_domain);
-  // color = d3.scaleOrdinal()
+  
   color = d3.scaleThreshold()
     .domain(color_domain)
     .range(colorArray);
-  // color = d3.schemeGreys[9];
+  
   projection
     .scale(1)
     .translate([0, 0])
@@ -74,10 +70,8 @@ function loadData(error, usData, AllDropCountyData) {
 
   function createLegendH() {
     const w = height;
-    const h = 8;
-    let percents = [domainMin, domainMax];
     let space = width / color_domain.length;
-    let dataset = color_domain;
+    let dataset = [...color_domain];
     const legend = d3.select(".legend-text")
       .append("svg")
       .attr("width", w)
@@ -99,7 +93,6 @@ function loadData(error, usData, AllDropCountyData) {
     legend
       .selectAll("text")
       .data(color_domain)
-      // .data(percents)
       .enter()
       .append("text")
       .text(e => parseFloat(e/1000).toFixed(2))
@@ -109,7 +102,6 @@ function loadData(error, usData, AllDropCountyData) {
       .attr("y", 42)
     }
 
-  // createLegendV();
   createLegendH();
   
   function click(d) {
