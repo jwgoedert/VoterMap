@@ -75,7 +75,8 @@ function loadData(error, usData, AllDropCountyData) {
       .append("svg")
       .attr("width", w)
       .attr("height", height - 32)
-      .attr("transform", "translate(32, -16)");
+      .attr("transform", "translate(32, -16)")
+      ;
 
     legend.selectAll("rect")
       .data(dataset)
@@ -92,24 +93,40 @@ function loadData(error, usData, AllDropCountyData) {
   function createLegendH() {
     const w = height;
     const h = 8;
+    let space = width / color_domain.length - 8;
     let dataset = color_domain;
     const legend = d3.select(".legend-text")
       .append("svg")
       .attr("width", w)
-      .attr("height", 8)
-
-    legend.selectAll("rect")
+      .attr("height", space * 2)
+      .selectAll("g")
       .data(dataset)
       .enter()
+      .append("g")
+
+    // legend.selectAll("rect")
+      // .data(dataset)
+      // .enter()
+    legend
       .append("rect")
       .attr("x", (d, i) => i * width / dataset.length)
       .attr("y", 0)
-      .attr("height", 32)
-      .attr("width", width/color_domain.length)
+      .attr("height", width / color_domain.length - 8)
+      .attr("width", width/color_domain.length - 8)
       .style("fill", (e, i) => {
         return color.range()[i];
       })
-  }
+    legend
+      .selectAll("text")
+      .data(countyDropData)
+      .enter()
+      .append("text")
+      .text( e => e.key_pct)
+      .attr("height", width / color_domain.length - 8)
+      .attr("width", width / color_domain.length - 8)
+      .attr("x", (d, i) => i * width / dataset.length)
+      .attr("y", 32)
+    }
 
   // createLegendV();
   createLegendH();
