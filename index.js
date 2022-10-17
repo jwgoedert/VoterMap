@@ -41,8 +41,8 @@ function loadData(error, usData, AllDropCountyData) {
   let domainMax = d3.max(countyDropData || [], d => +d.key_pct * 1000);
   let domainMin = d3.min(countyDropData || [], d => +d.key_pct * 1000);
   // let colorArray = ["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]
-  let colorArray = ["#dcdcdc", "#bdc9be", "#97b0a0", "#719782", "#4b7e64", "#256546", "#004d28"]
-  colorArray = ['#f7fcfd', '#e5f5f9', '#ccece6', '#99d8c9', '#66c2a4', '#41ae76', '#238b45', '#005824'];
+  // let colorArray = ["#dcdcdc", "#bdc9be", "#97b0a0", "#719782", "#4b7e64", "#256546", "#004d28"]
+  let colorArray = ['#f7fcfd', '#e5f5f9', '#ccece6', '#99d8c9', '#66c2a4', '#41ae76', '#238b45', '#005824'];
 
   // color_domain = d3.range(domainMin, domainMax, domainMax/colorArray.length);
   color_domain = d3.range(domainMin, domainMax, (domainMax-domainMin)/9 );
