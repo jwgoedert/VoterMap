@@ -31,7 +31,7 @@
 }
 
 .mouse-out {
-    stroke-width: 0.5px;
+    stroke-width: 1.5px;
     stroke: rgba(13, 106, 106, 0.5);
 }
 .button {
@@ -52,4 +52,8 @@
 .legend-text {
     font-size: .5rem;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
+}
+#legend-text-align{
+    text-align: right;
 }

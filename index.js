@@ -40,14 +40,12 @@ function loadData(error, usData, AllDropCountyData) {
   let countyDropData = AllDropCountyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
   let domainMax = d3.max(countyDropData || [], d => +d.key_pct * 1000);
   let domainMin = d3.min(countyDropData || [], d => +d.key_pct * 1000);
-  // let colorArray = [ '#e5f5f9', '#ccece6', '#99d8c9', '#66c2a4', '#41ae76', '#238b45', '#005824'];
-  let colorArray = ['#f7fcfd', '#e5f5f9', '#ccece6', '#99d8c9', '#66c2a4', '#41ae76', '#238b45', '#005824'];
-
-  color_domain = d3.range(domainMin, domainMax, (domainMax-domainMin)/8 );
-  
+  let colorArray = ['#d7191c','#ff3300','#dcac20', '#a6d96a', '#1a9641'];
+  color_domain = d3.range(domainMin, domainMax, domainMax / colorArray.length).concat(domainMax).slice(1);
   color = d3.scaleThreshold()
     .domain(color_domain)
-    .range(colorArray);
+    .range(colorArray.reverse());
+
   
   projection
     .scale(1)
@@ -86,7 +84,7 @@ function loadData(error, usData, AllDropCountyData) {
       .append("rect")
       .attr("x", (d, i) => i * width / dataset.length)
       .attr("y", 0)
-      .attr("height", space - 8)
+      .attr("height", 18)
       .attr("width", space - 8)
       .style("fill", (e, i) => {
         return color.range()[i];
@@ -96,10 +94,11 @@ function loadData(error, usData, AllDropCountyData) {
       .data(color_domain)
       .enter()
       .append("text")
-      .text((e, i) => i < color_domain.length -1 ? `${parseFloat(e/1000).toFixed(2)}%` : `${parseFloat(e/1000).toFixed(2)}+%`)
+      .text((e, i) => i < color_domain.length - 1 ? `${parseFloat(e/1000).toFixed(2)}%` : `-${parseFloat(domainMax/1000).toFixed(2)}%`)
+      .attr("id","legend-text")
       .attr("height",space)
       .attr("width", space)
-      .attr("x", (d, i) => i * width / dataset.length)
+      .attr("x", (d, i) => i * width / dataset.length+space/3)
       .attr("y", 42)
     }
 
@@ -120,30 +119,30 @@ function loadData(error, usData, AllDropCountyData) {
       .transition()
       .duration(200)
       .style("stroke", "orange")
-      .style("stroke-width", 2)
+      .style("stroke-width", 3)
   }
 
   function mouseOut(d) {
     d3.select(this)
       .transition()
       .duration(200)
-      .style("stroke-width", .5)
-      .style("stroke", "rgba(13, 106, 106, 0.5)")
+      .style("stroke-width", 1)
+      .style("stroke", "rgba(0, 0, 0)")
   }
 
   function renderStateCounties(v) {
     svg.append("g")
-      .attr("class", "mouse-out")
-      .selectAll("path")
-      .data(stateCounties)
-      .enter()
-      .append("path")
-      .attr("d", path)
-      .style("fill", d => color(countyByView(d)) ? color(countyByView(d).key_pct * 1000) : "white")
-      .style("stroke", "rgba(13, 106, 106)")
-      .on("mouseover", mouseOver)
-      .on("mouseout", mouseOut)
-      .on("click", click)
+    .attr("class", "mouse-out")
+    .selectAll("path")
+    .data(stateCounties)
+    .enter()
+    .append("path")
+    .attr("d", path)
+    .style("fill", d => color(countyByView(d)) ? color(countyByView(d).key_pct * 1000) : "white")
+    .style("stroke", "rgba(0,0,0,.75)") 
+    .on("mouseover", mouseOver)
+    .on("mouseout", mouseOut)
+    .on("click", click)
   }
     renderStateCounties();
 }
