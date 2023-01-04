@@ -21,10 +21,11 @@ let svg = d3.select('.map-box')
 queue()
   .defer(d3.json, "/static/data/usRobust.json")
   // .defer(d3.csv, "https://back9.voterpurgeproject.org:8443/api/voterfile/tally/display?filename=/mnt/f/voterfiles/report-2022-09/counties_merged/ALL_Drop_County.csv")
+  .defer(d3.json, "static/data/us-10m.v1.json")
   .defer(d3.csv, "static/data/ALL_Drop_County.csv")
   .await(loadData)
 /* Boot Function */
-function loadData(error, usData, AllDropCountyData) {
+function loadData(error, usData, countryMap, AllDropCountyData) {
   AllDropCountyData = AllDropCountyData.filter(e => e.County !== "NOT_MATCHED" || undefined);
 
   // let stateName = usData.objects.counties.geometries.find(el => el.properties.stateCode == stateId).properties.stateName;
@@ -35,7 +36,8 @@ function loadData(error, usData, AllDropCountyData) {
   //   d3.geoAlbers() : d3.geoMercator()
 
   /* Setup Projection */
-  let projection = d3.geoMercator()
+  // let projection = d3.geoMercator()
+  let projection = d3.geoAlbersUsa()
       .precision(0)
       .scale(height * 2)
       .translate([width / 2, height / 2]);
@@ -45,13 +47,16 @@ function loadData(error, usData, AllDropCountyData) {
   let state = topojson.feature(usData, usData.objects.states)
     .features.filter(d => d.id === stateId)[0];
 
-  let country = topojson.feature(usData, usData.objects.states).features;
+  let country = topojson.feature(usData, usData.objects.states).features.filter(d => d)[0];
   console.log("states", state);
   console.log("country", country);
 
 
+  // let stateCounties = topojson.feature(usData, usData.objects.counties)
+  //   .features.filter(d => d.properties.stateCode == filteredStateId);
   let stateCounties = topojson.feature(usData, usData.objects.counties)
-    .features.filter(d => d.properties.stateCode == filteredStateId);
+  .features.filter(d => d);
+  console.log('stateCounties', stateCounties);
 
   let countyDropData = AllDropCountyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
   let domainMax = d3.max(countyDropData || [], d => +d.key_pct * 1000);
@@ -67,9 +72,13 @@ function loadData(error, usData, AllDropCountyData) {
     .scale(1)
     .translate([0, 0])
 
-  let b = path.bounds(state),
-    s = 1.0 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
-    t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+  /* Create Final Projection params */
+
+  let b = path.bounds(country),
+    s = .2 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+    t = [(width - s * (b[1][0] + b[0][0])) / 4, (height - s * (b[1][1] + b[0][1])) / 2];
+    // s = 1.0 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+    // t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
 
   projection
     .scale(s)
@@ -150,7 +159,8 @@ function loadData(error, usData, AllDropCountyData) {
     svg.append("g")
     .attr("class", "mouse-out")
     .selectAll("path")
-    // .data(state)
+    // .data(country)
+    // .data(topojson.feature(countryMap, countryMap.objects.states).features)
     .data(stateCounties)
     .enter()
     .append("path")
