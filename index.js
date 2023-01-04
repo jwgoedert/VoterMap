@@ -16,7 +16,8 @@ let svg = d3.select('.map-box')
 
 queue()
   .defer(d3.json, "/static/data/usRobust.json")
-  .defer(d3.csv, "https://back9.voterpurgeproject.org:8443/api/voterfile/tally/display?filename=/mnt/f/voterfiles/report-2022-09/counties_merged/ALL_Drop_County.csv")
+  // .defer(d3.csv, "https://back9.voterpurgeproject.org:8443/api/voterfile/tally/display?filename=/mnt/f/voterfiles/report-2022-09/counties_merged/ALL_Drop_County.csv")
+  .defer(d3.csv, "static/data/ALL_Drop_County.csv")
   .await(loadData)
 
 function loadData(error, usData, AllDropCountyData) {
