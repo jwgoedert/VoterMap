@@ -3,14 +3,13 @@
 let width = parseInt(d3.select(".map-box").style("width"));
 let height = width;
 let queryParams = new URLSearchParams(window.location.search);
-let stateId = queryParams.has('state') ? +queryParams.get('state') : 31;
-let element = document.getElementById("fips_code");
-let val = element.getAttribute('value');
-stateId = +val || stateId;
+// let stateId = queryParams.has('state') ? +queryParams.get('state') : 31;
+// let element = document.getElementById("fips_code");
+// let val = element.getAttribute('value');
+// stateId = +val || stateId;
 let filteredStateId = stateId.toString().length == 2 ? stateId : `0${stateId}`;
 let stateFromCounty = countyId => countyId.length == 5 ? countyId.slice(0, 2) : `0${countyId[0]}`;
 let color;
-let view = 'state'; //use this as a toggle between 'state' and 'country' view
 
 /* Create SVG */
 
@@ -29,10 +28,10 @@ queue()
 function loadData(error, usData, countryMap, AllDropCountyData) {
   AllDropCountyData = AllDropCountyData.filter(e => e.County !== "NOT_MATCHED" || undefined);
 
-  // let stateName = usData.objects.counties.geometries.find(el => el.properties.stateCode == stateId).properties.stateName;
+  let stateName = usData.objects.counties.geometries.find(el => el.properties.stateCode == stateId).properties.stateName;
   if (error) throw error;
-  // d3.select(".state-header")
-  //   .text(stateName);
+  d3.select(".state-header")
+    .text(stateName);
   // let projection = stateId == 2 ?
   //   d3.geoAlbers() : d3.geoMercator()
 
@@ -55,7 +54,7 @@ function loadData(error, usData, countryMap, AllDropCountyData) {
 
   // let stateCounties = topojson.feature(usData, usData.objects.counties)
   //   .features.filter(d => d.properties.stateCode == filteredStateId);
-  let stateCounties = topojson.feature(usData, usData.objects.counties)
+  let stateCounties = topojson.feature(usData, usData.objects.states)
   .features.filter(d => d);
   console.log('stateCounties', stateCounties);
 
@@ -157,14 +156,13 @@ function loadData(error, usData, countryMap, AllDropCountyData) {
   }
   function renderCountry(v){
     svg.append("g")
-    svg.append("g")
     .attr("class", "mouse-out")
     .selectAll("path")
     .data(stateCounties)
     .enter()
     .append("path")
     .attr("d", path)
-    // .style("fill", d => color(countyByView(d)) ? color(countyByView(d).key_pct * 1000) : "white")
+    .style("fill", d => color(countyByView(d)) ? color(countyByView(d).key_pct * 1000) : "white")
     .style("stroke", "rgba(0,0,0,.75)")
     .on("mouseover", mouseOver)
     .on("mouseout", mouseOut)
@@ -186,6 +184,7 @@ function loadData(error, usData, countryMap, AllDropCountyData) {
     .on("mouseout", mouseOut)
     .on("click", click)
   }
-    renderStateCounties();
+    // renderStateCounties();
+    renderCountry();
 }
 
