@@ -10,6 +10,7 @@ stateId = +val || stateId;
 let filteredStateId = stateId.toString().length == 2 ? stateId : `0${stateId}`;
 let stateFromCounty = countyId => countyId.length == 5 ? countyId.slice(0, 2) : `0${countyId[0]}`;
 let color;
+let view = 'state'; //use this as a toggle between 'state' and 'country' view
 
 /* Create SVG */
 
@@ -154,7 +155,21 @@ function loadData(error, usData, countryMap, AllDropCountyData) {
       .style("stroke-width", 1)
       .style("stroke", "rgba(0, 0, 0)")
   }
-
+  function renderCountry(v){
+    svg.append("g")
+    svg.append("g")
+    .attr("class", "mouse-out")
+    .selectAll("path")
+    .data(stateCounties)
+    .enter()
+    .append("path")
+    .attr("d", path)
+    // .style("fill", d => color(countyByView(d)) ? color(countyByView(d).key_pct * 1000) : "white")
+    .style("stroke", "rgba(0,0,0,.75)")
+    .on("mouseover", mouseOver)
+    .on("mouseout", mouseOut)
+    .on("click", click)
+  }
   function renderStateCounties(v) {
     svg.append("g")
     .attr("class", "mouse-out")
