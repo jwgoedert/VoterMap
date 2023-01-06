@@ -19,15 +19,24 @@ queue()
 /* Boot Function */
 function loadData(error, usData, AllDropCountyData) {
   AllDropCountyData = AllDropCountyData.filter(e => e.County !== "NOT_MATCHED" || undefined);
+  
+  /* Very longhanded way of gleaning average percentages of states from county data--needs refactoring */
+  
   let stateArray = [];
   let statePercents = AllDropCountyData.map(el =>
     stateArray[el.FIPS_State]? stateArray[el.FIPS_State]+=(+el.key_pct): stateArray[el.FIPS_State]=+el.key_pct);
-  //   console.log(stateArray)
-      // console.log("stateData", stateData);
-function aggragatePercents(countryData){
-  
-}
-console.log(stateArray.filter(e => e));
+    console.log(stateArray)
+  const countyNumbersByState = 
+    AllDropCountyData.reduce((acc, v, i) => {
+      acc[v.FIPS_State] === undefined ? acc[v.FIPS_State] = 1 : acc[v.FIPS_State]++
+      return acc;
+    },{});
+    console.log(countyNumbersByState);
+  const stateAverages = stateArray.map((el, i, col) => 
+  el? +el/+countyNumbersByState[i] : 0);
+    console.log('stateaverage', stateAverages);
+
+
   if (error) throw error;
   let stateColor = function (county) {
     if (county) {
@@ -55,8 +64,8 @@ console.log(stateArray.filter(e => e));
     /* Domains need to be set off new aggragate data for state percents */
   // let domainMax = d3.max(countyDropData || [], d => +d.key_pct * 1000);
   // let domainMin = d3.min(countyDropData || [], d => +d.key_pct * 1000);
-  let domainMax = d3.max(stateArray || [], d => +d * 1000);
-  let domainMin = d3.min(stateArray || [], d => +d * 1000);
+  let domainMax = d3.max(stateAverages || [], d => +d * 10000);
+  let domainMin = d3.min(stateAverages || [], d => +d * 10000);
   // let domainMax = 1160;
   // let domainMin = 40;
   let colorArray = ['#d7191c','#ff3300','#dcac20', '#a6d96a', '#1a9641'];
@@ -109,15 +118,7 @@ console.log(stateArray.filter(e => e));
     .enter()
     .append("path")
     .attr("d", path)
-    .style("fill","lightblue")
-    .style("fill", function(d){
-      console.log("fillData",d, stateArray);
-      return color(stateArray[+d.id]) ? 
-      color(stateArray[+d.id] * 1000) :
-       "white"}) 
-    // .style("fill", d => color(stateArray[+d.FIPS_State]) ? color(stateArray[+d.FIPS_State] * 1000) : "white")
-    // .style("fill", d => color(countyByView(d)) ? color(countyByView(d).key_pct * 1000) : "white")
-    // .style("stroke", "darkblue")
+    .style("fill", d => color(stateArray[+d.id]) ? color(stateArray[+d.id] * 1000) : "white")
     .style("stroke", "rgba(0,0,0,.75)")
     .on("mouseover", mouseOver)
     .on("mouseout", mouseOut)
