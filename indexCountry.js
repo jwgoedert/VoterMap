@@ -19,17 +19,24 @@ queue()
 /* Boot Function */
 function loadData(error, usData, AllDropCountyData) {
   AllDropCountyData = AllDropCountyData.filter(e => e.County !== "NOT_MATCHED" || undefined);
-  console.log(AllDropCountyData);
-  let stateData = AllDropCountyData.reduce(function(states, county){
-    // console.log(states, county);
-    return states;
-  },[{
-    "percents":[0],
-    "00":"00",
-    "total":0
-  }])
-  // console.log("stateData", stateData);
+  let stateArray = [];
+  let statePercents = AllDropCountyData.map(el =>
+    stateArray[el.FIPS_State]? stateArray[el.FIPS_State]+=(+el.key_pct): stateArray[el.FIPS_State]=+el.key_pct);
+  //   console.log(stateArray)
+      // console.log("stateData", stateData);
+function aggragatePercents(countryData){
+  
+}
+console.log(stateArray.filter(e => e));
   if (error) throw error;
+  let stateColor = function (county) {
+    if (county) {
+      return stateArray.find(function (el) {
+        return el.id == county.id;
+      });
+    }
+  };
+
   /* Setup Projection */
   let projection = d3.geoAlbersUsa()
       .precision(0)
@@ -45,13 +52,13 @@ function loadData(error, usData, AllDropCountyData) {
   //   .features.filter(d => d.properties.stateCode == filteredStateId);
   let stateBorders = topojson.feature(usData, usData.objects.states)
     .features.filter(d => d);
-    console.log('stateBorders', stateBorders);
-    console.log('stats', AllDropCountyData);
+    /* Domains need to be set off new aggragate data for state percents */
   // let domainMax = d3.max(countyDropData || [], d => +d.key_pct * 1000);
   // let domainMin = d3.min(countyDropData || [], d => +d.key_pct * 1000);
-  let domainMax = 1160;
-  let domainMin = 40;
-  // console.log("domains", domainMax, domainMin);
+  let domainMax = d3.max(stateArray || [], d => +d * 1000);
+  let domainMin = d3.min(stateArray || [], d => +d * 1000);
+  // let domainMax = 1160;
+  // let domainMin = 40;
   let colorArray = ['#d7191c','#ff3300','#dcac20', '#a6d96a', '#1a9641'];
   color_domain = d3.range(domainMin, domainMax, domainMax / colorArray.length).concat(domainMax).slice(1);
   color = d3.scaleThreshold()
@@ -73,25 +80,10 @@ function loadData(error, usData, AllDropCountyData) {
     .scale(s)
     .translate(t)
 
-  let countyByView = function (county) {
-    if (county) {
-      return AllDropCountyData.find(function (el) {
-        return el.id == county.id;
-      });
-    }
-  };
-
   function click(d) {
     console.log("click", d);
-    
-    // .style("fill", d => color(countyByView(d)) ? color(countyByView(d).key_pct * 1000) : "white")
-    d3.select(this)
-      .style("fill", "orange");
     d3.selectAll("path")
       // .attr("xlink:href", e => window.location.href = `http://www.voterpurgeproject.org/stat/${e.id}`)
-
-    // d3.select(".selected")
-      // .text(`Selected: ${countyByView(d).County} ${countyByView(d).key_pct} % _  ${countyByView(d).count}`);
   }
 
   function mouseOver(d) {
@@ -118,11 +110,15 @@ function loadData(error, usData, AllDropCountyData) {
     .append("path")
     .attr("d", path)
     .style("fill","lightblue")
-    // .append("a")
-    // .attr("xlink:href", "http://en.wikipedia.org/wiki/")
+    .style("fill", function(d){
+      console.log("fillData",d, stateArray);
+      return color(stateArray[+d.id]) ? 
+      color(stateArray[+d.id] * 1000) :
+       "white"}) 
+    // .style("fill", d => color(stateArray[+d.FIPS_State]) ? color(stateArray[+d.FIPS_State] * 1000) : "white")
     // .style("fill", d => color(countyByView(d)) ? color(countyByView(d).key_pct * 1000) : "white")
-    .style("stroke", "darkblue")
-    // .style("stroke", "rgba(0,0,0,.75)")
+    // .style("stroke", "darkblue")
+    .style("stroke", "rgba(0,0,0,.75)")
     .on("mouseover", mouseOver)
     .on("mouseout", mouseOut)
     .on("click", click)
