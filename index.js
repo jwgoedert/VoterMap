@@ -39,6 +39,7 @@ function loadData(error, usData, AllDropCountyData) {
   let stateCounties = topojson.feature(usData, usData.objects.counties)
     .features.filter(d => d.properties.stateCode == filteredStateId);
   let countyDropData = AllDropCountyData.filter(d => stateFromCounty(d.id) == filteredStateId.toString());
+  console.log('DropData', countyDropData);
   let domainMax = d3.max(countyDropData || [], d => +d.key_pct * 1000);
   let domainMin = d3.min(countyDropData || [], d => +d.key_pct * 1000);
   let colorArray = ['#d7191c','#ff3300','#dcac20', '#a6d96a', '#1a9641'];
