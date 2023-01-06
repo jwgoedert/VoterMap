@@ -3,28 +3,10 @@
 }
 
 .map-box {
-    width: 45%;
-    display: inline-block;
-    /* background: lightcyan; */
-}
-.legend {
-    width: 15%;
+    width: 100%;
     display: inline-block;
 }
 
-.dashboard {
-    margin-left: 2rem;
-    width: 45%;
-    display: inline-block;
-    position:absolute;
-    font-size: 2rem;
-    font-family: 'Courier New';
-}
-
-.state-header {
-    display:inline-block;
-    position: relative;
-}
 .selected {
     fill: orange;
     color: orange;
@@ -33,27 +15,4 @@
 .mouse-out {
     stroke-width: 1.5px;
     stroke: rgba(13, 106, 106, 0.5);
-}
-.button {
-    width: 10%;
-    height: 32px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    border-radius: 3px;
-    text-align: center;
-    display: inline-block;
-    border: none;
-    background-color: white;
-    color: darkgreen;
-    font-size: 1rem;
-    padding:0px 32px 48px 15px;
-    font-weight: bold;
-}
-
-.legend-text {
-    font-size: .5rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    
-}
-#legend-text-align{
-    text-align: right;
 }
